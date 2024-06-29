@@ -1,5 +1,5 @@
-// Generated from C:/Users/fe151/IdeaProjects/Antlr/src/main/java/org/example/Pipescript.g4 by ANTLR 4.13.1
-package org.univates.pipescript.gen;
+// Generated from C:/Users/fe151/IdeaProjects/Antlr/src/main/java/org/univates/pipescript/Pipescript.g4 by ANTLR 4.13.1
+package org.univates.pipescript;
 
     import java.util.Map;
     import java.util.LinkedHashMap;
@@ -7,8 +7,11 @@ package org.univates.pipescript.gen;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-    import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class PipescriptParser extends Parser {
