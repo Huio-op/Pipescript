@@ -6,7 +6,7 @@
         <PerGrammarGenerationSettings>
           <option name="fileName" value="*" />
           <option name="autoGen" value="true" />
-          <option name="outputDir" value="C:\Users\fe151\IdeaProjects\Antlr\src\main\java\org\example\gen" />
+          <option name="outputDir" value="C:\Users\fe151\IdeaProjects\Antlr\src\main\java\org\univates\pipescript\gen" />
           <option name="libDir" value="" />
           <option name="encoding" value="" />
           <option name="pkg" value="" />

@@ -1,4 +1,4 @@
-grammar Tara;
+grammar Pipescript;
 
 /*---------------- COMPILER INTERNALS ----------------*/
 
@@ -21,9 +21,9 @@ grammar Tara;
     public static void main(String[] args) throws Exception
     {
         ANTLRInputStream input = new ANTLRInputStream(System.in);
-        TaraLexer lexer = new TaraLexer(input);
+        PipescriptLexer lexer = new PipescriptLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        TaraParser parser = new TaraParser(tokens);
+        PipescriptParser parser = new PipescriptParser(tokens);
         parser.program();
     }
 }
@@ -48,18 +48,19 @@ LESSER        : 'lt' ;
 LESSER_EQUAL  : 'lte' ;
 GREATER       : 'gt' ;
 GREATER_EQUAL : 'gte' ;
-FUNC          : 'public' ;
-MAIN          : 'function' ;
+FUNC          : 'fun '[a-zA-Z]+ ('|'|' |') ;
+//MAIN          : 'function' ;
 PRINT         : 'text' ;
 IF            : 'if' ;
 ELSE          : 'else' ;
 WHILE         : 'while' ;
 COMMA         : ',' ;
-VAR           : 'a'..'z'+ ;
+SEMICOLON     : ';' ;
+VAR           : [a-zA-Z]+ ;
 NUM           : '0'..'9'+ ;
 STRING        : '"' ~["]* '"' ;
 NL            : ('\r')? '\n' ;
-SPACE         : (' '|'\t')+ { skip(); } ;
+WS            : [ \t\r]+ -> skip ; // skip spaces and tabs
 
 /*---------------- PARSER RULES ----------------*/
 
@@ -69,7 +70,7 @@ program
 
 main
     :
-        FUNC MAIN OPEN_P CLOSE_P OPEN_C
+        FUNC OPEN_C
             {
                 System.out.println(".source Test.j");
                 System.out.println(".class  public Test");
@@ -103,7 +104,7 @@ statement
 statement_if
     :
         { Integer tempIf = ifCounter++; }
-        IF OPEN_P expression op = ( EQUAL | DIFFER | LESSER | LESSER_EQUAL | GREATER | GREATER_EQUAL ) expression
+        IF PIPE expression op = ( EQUAL | DIFFER | LESSER | LESSER_EQUAL | GREATER | GREATER_EQUAL ) expression
             {
 
              emit(($op.type == EQUAL)            ? "    if_icmpne NOT_IF_" + tempIf + " ; " :
@@ -113,14 +114,14 @@ statement_if
                      ($op.type == GREATER)       ? "    if_icmple NOT_IF_" + tempIf + " ; " :
                      ($op.type == GREATER_EQUAL) ? "    if_icmplt NOT_IF_" + tempIf + " ; " : "");            }
 
-        CLOSE_P OPEN_C NL (statement)* CLOSE_C NL
+        OPEN_C NL (statement)* CLOSE_C NL
             { emit("NOT_IF_" + tempIf + ": "); }
     ;
 
 statement_else
     :
         { Integer tempIfElse = ifCounter++; }
-        IF OPEN_P expression op = ( EQUAL | DIFFER | LESSER | LESSER_EQUAL | GREATER | GREATER_EQUAL ) expression
+        IF PIPE expression op = ( EQUAL | DIFFER | LESSER | LESSER_EQUAL | GREATER | GREATER_EQUAL ) expression
             { emit(($op.type == EQUAL)           ? "    if_icmpne NOT_IF_" + tempIfElse + " ; " :
                      ($op.type == DIFFER)        ? "    if_icmpeq NOT_IF_" + tempIfElse + " ; " :
                      ($op.type == LESSER)        ? "    if_icmpge NOT_IF_" + tempIfElse + " ; " :
@@ -128,7 +129,7 @@ statement_else
                      ($op.type == GREATER)       ? "    if_icmple NOT_IF_" + tempIfElse + " ; " :
                      ($op.type == GREATER_EQUAL) ? "    if_icmplt NOT_IF_" + tempIfElse + " ; " : ""); }
 
-        CLOSE_P OPEN_C NL (statement) *
+        OPEN_C NL (statement) *
             { emit("goto END_IF_ELSE_" + tempIfElse + " ; "); }
 
         CLOSE_C ELSE OPEN_C NL
@@ -143,7 +144,7 @@ statement_while
         { Integer tempWhile = ifCounter++;
           emit("START_WHILE_" + tempWhile + ": ");
         }
-        WHILE OPEN_P expression op = ( EQUAL | DIFFER | LESSER | LESSER_EQUAL | GREATER | GREATER_EQUAL ) expression
+        WHILE PIPE expression op = ( EQUAL | DIFFER | LESSER | LESSER_EQUAL | GREATER | GREATER_EQUAL ) expression
             { emit(($op.type == EQUAL)           ? "    if_icmpne END_WHILE_" + tempWhile + " ; " :
                      ($op.type == DIFFER)        ? "    if_icmpeq END_WHILE_" + tempWhile + " ; " :
                      ($op.type == LESSER)        ? "    if_icmpge END_WHILE_" + tempWhile + " ; " :
@@ -151,7 +152,7 @@ statement_while
                      ($op.type == GREATER)       ? "    if_icmple END_WHILE_" + tempWhile + " ; " :
                      ($op.type == GREATER_EQUAL) ? "    if_icmplt END_WHILE_" + tempWhile + " ; " : ""); }
 
-        CLOSE_P OPEN_C NL (statement)*
+        OPEN_C NL (statement)*
             { emit("goto START_WHILE_" + tempWhile + " ; "); }
 
         CLOSE_C NL
@@ -160,26 +161,27 @@ statement_while
 
 function_printInteger
     :
-        PRINT OPEN_P
+        PRINT PIPE
             { System.out.println("getstatic java/lang/System/out Ljava/io/PrintStream;"); }
 
-        expression CLOSE_P NL
+        expression
             { System.out.println("invokevirtual java/io/PrintStream/println(I)V\n"); }
     ;
 
 function_printString
     :
-        PRINT OPEN_P
+        PRINT PIPE
             { System.out.println("getstatic java/lang/System/out Ljava/io/PrintStream;"); }
 
-        STRING { System.out.println("ldc " + $STRING.text); } CLOSE_P NL
+        STRING { System.out.println("ldc " + $STRING.text); }
             { System.out.println("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V\n"); }
     ;
 
 call_function
     :
-        function_printInteger       |
-        function_printString
+        (function_printInteger       |
+        function_printString)
+        SEMICOLON
     ;
 
 assignment
@@ -188,7 +190,7 @@ assignment
     	{
     	    if (!memory.containsKey($VAR.text)) memory.put($VAR.text, counter++);
             System.out.println("istore " + memory.get($VAR.text));
-        }
+        } SEMICOLON
     ;
 
 expression
