@@ -15,7 +15,7 @@ import static org.antlr.v4.runtime.CharStreams.fromFileName;
 public class RunPipescript {
 
   private final static String INPUT_FILENAME = "src/main/java/org/univates/pipescript/Test.ps";
-  private final static String OUTPUT_FILENAME = "src/main/java/org/univates/pipescript/output/output.txt";
+  private final static String OUTPUT_FILENAME = "src/main/java/org/univates/pipescript/output/Output.j";
 
   public static void main(String[] args) {
     try {

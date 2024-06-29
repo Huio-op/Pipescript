@@ -1,5 +1,5 @@
-.source Test.j
-.class  public Test
+.source Output.j
+.class  public Output
 .super  java/lang/Object
 
 .method public <init>()V

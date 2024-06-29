@@ -72,8 +72,8 @@ main
     :
         FUNC OPEN_C
             {
-                System.out.println(".source Test.j");
-                System.out.println(".class  public Test");
+                System.out.println(".source Output.j");
+                System.out.println(".class  public Output");
                 System.out.println(".super  java/lang/Object\n");
                 System.out.println(".method public <init>()V");
                 System.out.println("aload_0");
