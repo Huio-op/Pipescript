@@ -48,8 +48,8 @@ LESSER        : 'lt' ;
 LESSER_EQUAL  : 'lte' ;
 GREATER       : 'gt' ;
 GREATER_EQUAL : 'gte' ;
-FUNC          : 'fun '[a-zA-Z]+ ('|'|' |') ;
-//MAIN          : 'function' ;
+FUNC          : 'fun' ;
+MAIN          : 'main' ;
 PRINT         : 'text' ;
 IF            : 'if' ;
 ELSE          : 'else' ;
@@ -65,12 +65,12 @@ WS            : [ \t\r]+ -> skip ; // skip spaces and tabs
 /*---------------- PARSER RULES ----------------*/
 
 program
-    :  main
+    :  main (NL)* (function)*
     ;
 
 main
     :
-        FUNC OPEN_C
+        FUNC MAIN PIPE OPEN_C
             {
                 System.out.println(".source Output.j");
                 System.out.println(".class  public Output");
@@ -81,6 +81,22 @@ main
                 System.out.println("return");
                 System.out.println(".end method\n");
                 System.out.println(".method public static main([Ljava/lang/String;)V\n");
+            }
+        (statement) * CLOSE_C NL
+            {
+                System.out.println("return");
+                System.out.println(".limit stack 50");
+                System.out.println(".limit locals 50");
+                System.out.println(".end method");
+            }
+    ;
+
+function
+    :
+        FUNC VAR PIPE OPEN_C
+            {
+                if (!memory.containsKey($VAR.text)) memory.put($VAR.text, counter++);
+                System.out.println(".method public static "+ $VAR.text +"([Ljava/lang/String;)V\n");
             }
         (statement) * CLOSE_C NL
             {
