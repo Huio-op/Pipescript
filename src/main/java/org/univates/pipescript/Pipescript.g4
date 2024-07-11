@@ -61,6 +61,13 @@ NUM           : '0'..'9'+ ;
 STRING        : '"' ~["]* '"' ;
 NL            : ('\r')? '\n' ;
 WS            : [ \t\r]+ -> skip ; // skip spaces and tabs
+INT_VAR       : 'int';
+DOUBLE_VAR    : 'double';
+STRING_VAR    : 'str';
+CHAR_VAR      : 'char';
+BOOL_VAR      : 'bool';
+VOID_VAR      : 'void';
+NULL_VAR      : 'null';
 
 /*---------------- PARSER RULES ----------------*/
 
@@ -202,7 +209,7 @@ call_function
 
 assignment
     :
-        VAR ATTRIB ( expression | call_function )
+        types VAR ATTRIB ( expression )
     	{
     	    if (!memory.containsKey($VAR.text)) memory.put($VAR.text, counter++);
             System.out.println("istore " + memory.get($VAR.text));
@@ -245,4 +252,9 @@ factor
         } |
 
         OPEN_P expression CLOSE_P
+    ;
+
+types
+    :
+        (INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR)
     ;
