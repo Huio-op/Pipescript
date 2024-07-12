@@ -14,7 +14,7 @@ grammar Pipescript;
     Integer counter = 1;
     Integer ifCounter = 1;
 
-    public static class Var{
+    public static class Var {
         public String name;
         public String type;
         public String stackPos;
@@ -236,11 +236,10 @@ call_function
 
 assignment
     :
-        (tp = type) VAR ATTRIB ( expression )
-//        INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR
+        ( type VAR ATTRIB ( expression )
     	{
     	    if (!memory.containsKey($VAR.text)) memory.put($VAR.text, counter++);
-    	    switch($tp.type) {
+    	    switch($type.text) {
     	        case 'INT_VAR':
     	        case 'CHAR_VAR':
     	            System.out.println("istore " + memory.get($VAR.text));
@@ -254,7 +253,10 @@ assignment
                 case 'STRING_VAR':
     	            System.out.println("istore " + memory.get($VAR.text));
                     break;
-        } SEMICOLON
+                default:
+                    System.err.println("undefined variable " + $VAR.text);
+            }
+        } SEMICOLON )
     ;
 
 expression
