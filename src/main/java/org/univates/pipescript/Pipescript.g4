@@ -10,7 +10,8 @@ grammar Pipescript;
 
 @members
 {
-    Map<String, Integer> memory = new LinkedHashMap<String, Integer>();
+    Map<String, Var> memory = new LinkedHashMap<String, Var>();
+    Map<String, Integer> stackCounter = new LinkedHashMap<String, Integer>();
     Integer counter = 1;
     Integer ifCounter = 1;
 
@@ -19,25 +20,25 @@ grammar Pipescript;
         public String type;
         public String stackPos;
 
-        public Var(String name, String type, String stack){
+        public Var (String name, String type, String stack) {
             this.name = name;
             this.type = type;
             this.stackPos = stack;
         }
 
-        public boolean isOnStack(){
-            if(stackPos.isEmpty()){
+        public boolean isOnStack() {
+            if (stackPos.isEmpty()) {
                 return false;
             }
             return true;
         }
 
-        public String getStackPos(){
+        public String getStackPos() {
             return stackPos;
         }
 
-        public String toString(){
-            return "{" + this.name + "," + this.type + ", " + this.stackPos + "}";
+        public String toString() {
+            return "{" this.name + ", " + this.type + ", " + this.stackPos + "}";
         }
     }
 
@@ -236,7 +237,7 @@ call_function
 
 assignment
     :
-        ( type VAR ATTRIB ( expression )
+        type VAR ATTRIB ( expression )
     	{
     	    if (!memory.containsKey($VAR.text)) memory.put($VAR.text, counter++);
     	    switch($type.text) {
@@ -250,13 +251,10 @@ assignment
                 case 'DOUBLE_VAR':
     	            System.out.println("dstore " + memory.get($VAR.text));
                     break;
-                case 'STRING_VAR':
-    	            System.out.println("istore " + memory.get($VAR.text));
-                    break;
                 default:
                     System.err.println("undefined variable " + $VAR.text);
             }
-        } SEMICOLON )
+        } SEMICOLON
     ;
 
 expression
