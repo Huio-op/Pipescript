@@ -14,6 +14,33 @@ grammar Pipescript;
     Integer counter = 1;
     Integer ifCounter = 1;
 
+    public static class Var{
+        public String name;
+        public String type;
+        public String stackPos;
+
+        public Var(String name, String type, String stack){
+            this.name = name;
+            this.type = type;
+            this.stackPos = stack;
+        }
+
+        public boolean isOnStack(){
+            if(stackPos.isEmpty()){
+                return false;
+            }
+            return true;
+        }
+
+        public String getStackPos(){
+            return stackPos;
+        }
+
+        public String toString(){
+            return "{" + this.name + "," + this.type + ", " + this.stackPos + "}";
+        }
+    }
+
     public static void emit(String s) {
 	    System.out.println(s);
     }
@@ -33,7 +60,7 @@ grammar Pipescript;
 PLUS          : '+' ;
 MINUS         : '-' ;
 TIMES         : '*' ;
-OVER          : '/' ;
+DIV           : '/' ;
 OPEN_C        : '{' ;
 CLOSE_C       : '}' ;
 OPEN_B        : '[' ;
@@ -56,18 +83,18 @@ ELSE          : 'else' ;
 WHILE         : 'while' ;
 COMMA         : ',' ;
 SEMICOLON     : ';' ;
-VAR           : [a-zA-Z]+ ;
+VAR           : [a-zA-Z]+ ~[type | FUNC] ;
 NUM           : '0'..'9'+ ;
 STRING        : '"' ~["]* '"' ;
 NL            : ('\r')? '\n' ;
 WS            : [ \t\r]+ -> skip ; // skip spaces and tabs
-INT_VAR       : 'int';
-DOUBLE_VAR    : 'double';
-STRING_VAR    : 'str';
-CHAR_VAR      : 'char';
-BOOL_VAR      : 'bool';
-VOID_VAR      : 'void';
-NULL_VAR      : 'null';
+INT_VAR       : 'int' ;
+DOUBLE_VAR    : 'double' ;
+STRING_VAR    : 'str' ;
+CHAR_VAR      : 'char' ;
+BOOL_VAR      : 'bool' ;
+VOID_VAR      : 'void' ;
+NULL_VAR      : 'null' ;
 
 /*---------------- PARSER RULES ----------------*/
 
@@ -209,10 +236,24 @@ call_function
 
 assignment
     :
-        types VAR ATTRIB ( expression )
+        (tp = type) VAR ATTRIB ( expression )
+//        INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR
     	{
     	    if (!memory.containsKey($VAR.text)) memory.put($VAR.text, counter++);
-            System.out.println("istore " + memory.get($VAR.text));
+    	    switch($tp.type) {
+    	        case 'INT_VAR':
+    	        case 'CHAR_VAR':
+    	            System.out.println("istore " + memory.get($VAR.text));
+                    break;
+                case 'BOOL_VAR':
+    	            System.out.println("bstore " + memory.get($VAR.text));
+                    break;
+                case 'DOUBLE_VAR':
+    	            System.out.println("dstore " + memory.get($VAR.text));
+                    break;
+                case 'STRING_VAR':
+    	            System.out.println("istore " + memory.get($VAR.text));
+                    break;
         } SEMICOLON
     ;
 
@@ -225,7 +266,7 @@ expression
 
 term
     :
-        factor ( op = ( TIMES | OVER ) factor
+        factor ( op = ( TIMES | DIV ) factor
              { System.out.println(($op.type == TIMES) ? "imul" : "idiv"); }
         )*
     ;
@@ -254,7 +295,7 @@ factor
         OPEN_P expression CLOSE_P
     ;
 
-types
+type
     :
         (INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR)
     ;
