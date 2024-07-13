@@ -3,6 +3,7 @@ package org.univates.pipescript;
 
     import java.util.Map;
     import java.util.LinkedHashMap;
+    import java.util.List;
 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -31,6 +32,16 @@ public interface PipescriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMain(PipescriptParser.MainContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PipescriptParser#function}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction(PipescriptParser.FunctionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PipescriptParser#function}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction(PipescriptParser.FunctionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PipescriptParser#statement}.
 	 * @param ctx the parse tree

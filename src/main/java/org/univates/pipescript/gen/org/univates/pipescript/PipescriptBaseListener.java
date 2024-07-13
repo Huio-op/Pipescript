@@ -3,6 +3,7 @@ package org.univates.pipescript;
 
     import java.util.Map;
     import java.util.LinkedHashMap;
+    import java.util.List;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -40,6 +41,18 @@ public class PipescriptBaseListener implements PipescriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitMain(PipescriptParser.MainContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunction(PipescriptParser.FunctionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunction(PipescriptParser.FunctionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

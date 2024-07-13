@@ -7,6 +7,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -19,6 +21,8 @@ public class RunPipescript {
 
   public static void main(String[] args) {
     try {
+      List<String> vars = new ArrayList<>();
+      vars.stream().anyMatch(var -> !var.isEmpty());
       CharStream input = fromFileName(INPUT_FILENAME);
       org.univates.pipescript.PipescriptLexer lexer = new org.univates.pipescript.PipescriptLexer(input);
       org.univates.pipescript.PipescriptParser parser = new org.univates.pipescript.PipescriptParser(new CommonTokenStream(lexer));

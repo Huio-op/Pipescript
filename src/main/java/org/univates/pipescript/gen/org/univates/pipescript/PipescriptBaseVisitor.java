@@ -3,6 +3,7 @@ package org.univates.pipescript;
 
     import java.util.Map;
     import java.util.LinkedHashMap;
+    import java.util.List;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -30,6 +31,13 @@ public class PipescriptBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitMain(PipescriptParser.MainContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitFunction(PipescriptParser.FunctionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

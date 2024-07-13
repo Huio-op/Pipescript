@@ -3,6 +3,7 @@ package org.univates.pipescript;
 
     import java.util.Map;
     import java.util.LinkedHashMap;
+    import java.util.List;
 
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -26,6 +27,12 @@ public interface PipescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMain(PipescriptParser.MainContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PipescriptParser#function}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction(PipescriptParser.FunctionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PipescriptParser#statement}.
 	 * @param ctx the parse tree

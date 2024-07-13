@@ -1,3 +1,0 @@
-publicfunction(){
-print_r("hello world")
-}

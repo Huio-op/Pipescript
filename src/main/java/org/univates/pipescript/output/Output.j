@@ -11,12 +11,12 @@ return
 .method public static main([Ljava/lang/String;)V
 
 ldc 2
-istore 1
+istore 0
 getstatic java/lang/System/out Ljava/io/PrintStream;
 ldc "hello world"
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 
-ldc 2
+iload 0
 ldc 4
     if_icmpge NOT_IF_1 ; 
 getstatic java/lang/System/out Ljava/io/PrintStream;
