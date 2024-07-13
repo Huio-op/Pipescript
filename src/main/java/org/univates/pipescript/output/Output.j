@@ -28,3 +28,16 @@ return
 .limit stack 50
 .limit locals 50
 .end method
+.method public static sum(III)I
+
+getstatic java/lang/System/out Ljava/io/PrintStream;
+ldc "test func"
+invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+
+iload 0
+iload 0
+iadd
+ireturn
+.limit stack 50
+.limit locals 50
+.end method

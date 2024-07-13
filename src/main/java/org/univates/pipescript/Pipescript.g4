@@ -7,12 +7,13 @@ grammar Pipescript;
     import java.util.Map;
     import java.util.LinkedHashMap;
     import java.util.List;
+    import java.util.function.Function;
 }
 
 @members
 {
     Map<String, List<Var>> memory = new LinkedHashMap<String, List<Var>>();
-    Map<String, Integer> stackCounter = new LinkedHashMap<String, Integer>();
+    Map<String, Map<String, Integer>> stackCounter = new LinkedHashMap<String, Map<String, Integer>>();
     Integer counter = 1;
     Integer ifCounter = 1;
 
@@ -71,6 +72,7 @@ OPEN_P        : '(' ;
 CLOSE_P       : ')' ;
 PIPE          : '|' ;
 ATTRIB        : '<<' ;
+RETURN        : '>>' ;
 EQUAL         : 'is' ;
 DIFFER        : 'not' ;
 LESSER        : 'lt' ;
@@ -108,7 +110,7 @@ main
     :
         FUNC MAIN PIPE OPEN_C
             {
-                if (!stackCounter.containsKey("main")) stackCounter.put("main", 0);
+                if (!stackCounter.containsKey("main")) stackCounter.put("main", new LinkedHashMap<String, Integer>());
 
                 System.out.println(".source Output.j");
                 System.out.println(".class  public Output");
@@ -131,14 +133,96 @@ main
 
 function
     :
-        FUNC VAR PIPE OPEN_C
+    {
+        List<String> types = new ArrayList();
+        List<String> names = new ArrayList();
+    }
+        FUNC (name = VAR) PIPE
+          (types+=(INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR )
+            vars+=VAR (COMMA types+=(INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR ) vars+=VAR)*
+          )?
+          PIPE (ret = INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR )
+          OPEN_C
             {
-                if (!stackCounter.containsKey($VAR.text)) stackCounter.put($VAR.text, 0);
-                System.out.println(".method public static "+ $VAR.text +"([Ljava/lang/String;)V\n");
+                if (!stackCounter.containsKey($name.text)) stackCounter.put($name.text, new LinkedHashMap());
+
+                final List<Var> receivedVars = new ArrayList();
+                for (int i = 0; i < $types.size(); i++) {
+                    final String type = $types.get(i).getText();
+                    final String name = $vars.get(i).getText();
+
+                    Map<String, Integer> stackTypes = stackCounter.get($name.text);
+                    Integer count = stackTypes.get(type);
+                    if (count == null) {
+                        count = 0;
+                    }
+                    final Var var = new Var(name, type, count);
+                    receivedVars.add(var);
+
+                    stackTypes.put(type, count++);
+                    stackCounter.put($name.text, stackTypes);
+                }
+                if (memory.containsKey($name.text)) {
+                    System.err.println("function being overwritten " + $name.text);
+                }
+
+                memory.put($name.text, receivedVars);
+
+                String returnType = switch($ret.type) {
+                    case INT_VAR:
+                        yield "I";
+                    case BOOL_VAR:
+                        yield "i";
+                    case CHAR_VAR:
+                        yield "i";
+                    case DOUBLE_VAR:
+                        yield "F";
+                    case STRING_VAR:
+                        yield "Ljava/lang/String;";
+                    default:
+                        yield "V";
+                };
+
+                final Function<String, String> getTypeString = (String type) -> {
+                    return switch(type) {
+                        case "int":
+                            yield "I";
+                        case "bool":
+                            yield "B";
+                        case "char":
+                            yield "C";
+                        case "double":
+                            yield "F";
+                        case "str":
+                            yield "Ljava/lang/String;";
+                        default:
+                            yield "V";
+                    };
+                };
+                String receivedTypes = receivedVars.stream().map(v -> getTypeString.apply(v.type)).reduce("", String::concat);
+
+                System.out.println(".method public static "+ $name.text +"("+ receivedTypes +")"+ returnType +"\n");
             }
-        (statement[$VAR.text]) * CLOSE_C NL
+        (statement[$name.text]) *
+        RETURN expression[$name.text] SEMICOLON NL
+        CLOSE_C NL
             {
-                System.out.println("return");
+                switch($ret.type) {
+                    case INT_VAR:
+                    case BOOL_VAR:
+                    case CHAR_VAR:
+                        System.out.println("ireturn");
+                        break;
+                    case DOUBLE_VAR:
+                        System.out.println("dreturn");
+                        break;
+                    case STRING_VAR:
+                        System.out.println("areturn");
+                        break;
+                    default:
+                        System.out.println("return");
+                        break;
+                };
                 System.out.println(".limit stack 50");
                 System.out.println(".limit locals 50");
                 System.out.println(".end method");
@@ -248,9 +332,14 @@ assignment [String funcName]
             }
     	    boolean containsVar = vars.stream().anyMatch(var -> var.name.equals($VAR.text));
     	    if (!containsVar) {
-                Integer stackCount = stackCounter.get(funcName);
+                Map<String, Integer> stackTypes = stackCounter.get(funcName);
+                Integer stackCount = stackTypes.get($op.text);
+                if (stackCount == null) {
+                    stackCount = 0;
+                }
     	        Var newVar = new Var($VAR.text, $op.text, stackCount);
-    	        stackCounter.put(funcName, stackCount++);
+    	        stackTypes.put($op.text, stackCount++);
+    	        stackCounter.put(funcName, stackTypes);
                 vars.add(newVar);
                 memory.put(funcName, vars);
     	    }
