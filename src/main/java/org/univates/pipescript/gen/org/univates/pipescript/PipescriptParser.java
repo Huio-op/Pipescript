@@ -28,9 +28,9 @@ public class PipescriptParser extends Parser {
 		PLUS=1, MINUS=2, TIMES=3, DIV=4, OPEN_C=5, CLOSE_C=6, OPEN_B=7, CLOSE_B=8, 
 		OPEN_P=9, CLOSE_P=10, PIPE=11, ATTRIB=12, RETURN=13, EQUAL=14, DIFFER=15, 
 		LESSER=16, LESSER_EQUAL=17, GREATER=18, GREATER_EQUAL=19, FUNC=20, MAIN=21, 
-		PRINT=22, SCANNER=23, IF=24, ELSE=25, WHILE=26, COMMA=27, SEMICOLON=28, 
-		VAR=29, NUM=30, STRING=31, NL=32, WS=33, INT_VAR=34, DOUBLE_VAR=35, STRING_VAR=36, 
-		CHAR_VAR=37, BOOL_VAR=38, VOID_VAR=39, NULL_VAR=40;
+		PRINT=22, INT_SCANNER=23, STR_SCANNER=24, IF=25, ELSE=26, WHILE=27, COMMA=28, 
+		SEMICOLON=29, INT_VAR=30, DOUBLE_VAR=31, STRING_VAR=32, CHAR_VAR=33, BOOL_VAR=34, 
+		VOID_VAR=35, NULL_VAR=36, NUM=37, VAR=38, STRING=39, NL=40, WS=41;
 	public static final int
 		RULE_program = 0, RULE_main = 1, RULE_function = 2, RULE_statement = 3, 
 		RULE_statement_if = 4, RULE_statement_else = 5, RULE_statement_while = 6, 
@@ -52,9 +52,9 @@ public class PipescriptParser extends Parser {
 		return new String[] {
 			null, "'+'", "'-'", "'*'", "'/'", "'{'", "'}'", "'['", "']'", "'('", 
 			"')'", "'|'", "'<<'", "'>>'", "'is'", "'not'", "'lt'", "'lte'", "'gt'", 
-			"'gte'", "'fun'", "'main'", "'text'", "'textIn'", "'if'", "'else'", "'while'", 
-			"','", "';'", null, null, null, null, null, "'int'", "'double'", "'str'", 
-			"'char'", "'bool'", "'void'", "'null'"
+			"'gte'", "'fun'", "'main'", "'text'", "'textInInt'", "'textInStr'", "'if'", 
+			"'else'", "'while'", "','", "';'", "'int'", "'double'", "'str'", "'char'", 
+			"'bool'", "'void'", "'null'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -63,9 +63,9 @@ public class PipescriptParser extends Parser {
 			null, "PLUS", "MINUS", "TIMES", "DIV", "OPEN_C", "CLOSE_C", "OPEN_B", 
 			"CLOSE_B", "OPEN_P", "CLOSE_P", "PIPE", "ATTRIB", "RETURN", "EQUAL", 
 			"DIFFER", "LESSER", "LESSER_EQUAL", "GREATER", "GREATER_EQUAL", "FUNC", 
-			"MAIN", "PRINT", "SCANNER", "IF", "ELSE", "WHILE", "COMMA", "SEMICOLON", 
-			"VAR", "NUM", "STRING", "NL", "WS", "INT_VAR", "DOUBLE_VAR", "STRING_VAR", 
-			"CHAR_VAR", "BOOL_VAR", "VOID_VAR", "NULL_VAR"
+			"MAIN", "PRINT", "INT_SCANNER", "STR_SCANNER", "IF", "ELSE", "WHILE", 
+			"COMMA", "SEMICOLON", "INT_VAR", "DOUBLE_VAR", "STRING_VAR", "CHAR_VAR", 
+			"BOOL_VAR", "VOID_VAR", "NULL_VAR", "NUM", "VAR", "STRING", "NL", "WS"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -134,6 +134,23 @@ public class PipescriptParser extends Parser {
 	            default:
 	                return "iload " + var.stackPos;
 	        }
+	    };
+
+	    final Function<String, String> getTypeString = (String type) -> {
+	        return switch(type) {
+	            case "int":
+	                yield "I";
+	            case "bool":
+	                yield "B";
+	            case "char":
+	                yield "C";
+	            case "double":
+	                yield "F";
+	            case "str":
+	                yield "Ljava/lang/String;";
+	            default:
+	                yield "V";
+	        };
 	    };
 
 	    public static class CustomFunction {
@@ -346,7 +363,7 @@ public class PipescriptParser extends Parser {
 			setState(59);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 2186771693568L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 1510951878656L) != 0)) {
 				{
 				{
 				setState(56);
@@ -389,10 +406,10 @@ public class PipescriptParser extends Parser {
 		public Token CHAR_VAR;
 		public Token DOUBLE_VAR;
 		public Token STRING_VAR;
-		public Token _tset435;
+		public Token _tset442;
 		public Token VAR;
 		public List<Token> vars = new ArrayList<Token>();
-		public Token _tset465;
+		public Token _tset472;
 		public Token ret;
 		public TerminalNode FUNC() { return getToken(PipescriptParser.FUNC, 0); }
 		public List<TerminalNode> PIPE() { return getTokens(PipescriptParser.PIPE); }
@@ -486,20 +503,20 @@ public class PipescriptParser extends Parser {
 			setState(80);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 532575944704L) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 33285996544L) != 0)) {
 				{
 				setState(70);
-				((FunctionContext)_localctx)._tset435 = _input.LT(1);
+				((FunctionContext)_localctx)._tset442 = _input.LT(1);
 				_la = _input.LA(1);
-				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 532575944704L) != 0)) ) {
-					((FunctionContext)_localctx)._tset435 = (Token)_errHandler.recoverInline(this);
+				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 33285996544L) != 0)) ) {
+					((FunctionContext)_localctx)._tset442 = (Token)_errHandler.recoverInline(this);
 				}
 				else {
 					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
 					_errHandler.reportMatch(this);
 					consume();
 				}
-				((FunctionContext)_localctx).types.add(((FunctionContext)_localctx)._tset435);
+				((FunctionContext)_localctx).types.add(((FunctionContext)_localctx)._tset442);
 				setState(71);
 				((FunctionContext)_localctx).VAR = match(VAR);
 				((FunctionContext)_localctx).vars.add(((FunctionContext)_localctx).VAR);
@@ -512,17 +529,17 @@ public class PipescriptParser extends Parser {
 					setState(72);
 					match(COMMA);
 					setState(73);
-					((FunctionContext)_localctx)._tset465 = _input.LT(1);
+					((FunctionContext)_localctx)._tset472 = _input.LT(1);
 					_la = _input.LA(1);
-					if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 532575944704L) != 0)) ) {
-						((FunctionContext)_localctx)._tset465 = (Token)_errHandler.recoverInline(this);
+					if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 33285996544L) != 0)) ) {
+						((FunctionContext)_localctx)._tset472 = (Token)_errHandler.recoverInline(this);
 					}
 					else {
 						if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
 						_errHandler.reportMatch(this);
 						consume();
 					}
-					((FunctionContext)_localctx).types.add(((FunctionContext)_localctx)._tset465);
+					((FunctionContext)_localctx).types.add(((FunctionContext)_localctx)._tset472);
 					setState(74);
 					((FunctionContext)_localctx).VAR = match(VAR);
 					((FunctionContext)_localctx).vars.add(((FunctionContext)_localctx).VAR);
@@ -622,22 +639,6 @@ public class PipescriptParser extends Parser {
 			                        yield "V";
 			                };
 
-			                final Function<String, String> getTypeString = (String type) -> {
-			                    return switch(type) {
-			                        case "int":
-			                            yield "I";
-			                        case "bool":
-			                            yield "B";
-			                        case "char":
-			                            yield "C";
-			                        case "double":
-			                            yield "F";
-			                        case "str":
-			                            yield "Ljava/lang/String;";
-			                        default:
-			                            yield "V";
-			                    };
-			                };
 			                String receivedTypes = receivedVars.stream()
 			                    .map(v -> getTypeString.apply(v.type))
 			                    .reduce("", String::concat);
@@ -647,7 +648,7 @@ public class PipescriptParser extends Parser {
 			setState(96);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 2186771693568L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 1510951878656L) != 0)) {
 				{
 				{
 				setState(93);
@@ -899,7 +900,7 @@ public class PipescriptParser extends Parser {
 			setState(127);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 2186771693568L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 1510951878656L) != 0)) {
 				{
 				{
 				setState(124);
@@ -1026,7 +1027,7 @@ public class PipescriptParser extends Parser {
 			setState(146);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 2186771693568L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 1510951878656L) != 0)) {
 				{
 				{
 				setState(143);
@@ -1050,7 +1051,7 @@ public class PipescriptParser extends Parser {
 			setState(158);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 2186771693568L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 1510951878656L) != 0)) {
 				{
 				{
 				setState(155);
@@ -1172,7 +1173,7 @@ public class PipescriptParser extends Parser {
 			setState(177);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 2186771693568L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 1510951878656L) != 0)) {
 				{
 				{
 				setState(174);
@@ -1205,6 +1206,7 @@ public class PipescriptParser extends Parser {
 	@SuppressWarnings("CheckReturnValue")
 	public static class Function_printIntegerContext extends ParserRuleContext {
 		public String funcName;
+		public ExpressionContext var;
 		public TerminalNode PRINT() { return getToken(PipescriptParser.PRINT, 0); }
 		public TerminalNode PIPE() { return getToken(PipescriptParser.PIPE, 0); }
 		public ExpressionContext expression() {
@@ -1242,9 +1244,30 @@ public class PipescriptParser extends Parser {
 			setState(186);
 			match(PIPE);
 			 System.out.println("getstatic java/lang/System/out Ljava/io/PrintStream;"); 
+			{
 			setState(188);
-			expression(funcName);
-			 System.out.println("invokevirtual java/io/PrintStream/println(I)V\n"); 
+			((Function_printIntegerContext)_localctx).var = expression(funcName);
+			}
+
+			                final String expressionResult = (((Function_printIntegerContext)_localctx).var!=null?_input.getText(((Function_printIntegerContext)_localctx).var.start,((Function_printIntegerContext)_localctx).var.stop):null);
+
+			                if (expressionResult.matches("^[a-zA-Z]+$")) {
+			                    final List<Var> memoryVars = memory.get(funcName);
+
+			                    final Var var = memoryVars.stream().filter(v -> v.name.equals(expressionResult)).findFirst()
+			                        .orElse(null);
+			                    if (var == null) {
+			                        System.err.println("Unknown variable " + expressionResult + " in function call text");
+			                        throw new RuntimeException("Unknown variable " + expressionResult + " in function call text");
+			                    }
+
+			                    final String returnType = getTypeString.apply(var.type);
+
+			                    System.out.println("invokevirtual java/io/PrintStream/println("+ returnType +")V\n");
+			                } else {
+			                    System.out.println("invokevirtual java/io/PrintStream/println(I)V\n");
+			                }
+			            
 			}
 		}
 		catch (RecognitionException re) {
@@ -1382,7 +1405,7 @@ public class PipescriptParser extends Parser {
 	@SuppressWarnings("CheckReturnValue")
 	public static class Function_scanIntegerContext extends ParserRuleContext {
 		public String funcName;
-		public TerminalNode SCANNER() { return getToken(PipescriptParser.SCANNER, 0); }
+		public TerminalNode INT_SCANNER() { return getToken(PipescriptParser.INT_SCANNER, 0); }
 		public TerminalNode PIPE() { return getToken(PipescriptParser.PIPE, 0); }
 		public Function_scanIntegerContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
 		public Function_scanIntegerContext(ParserRuleContext parent, int invokingState, String funcName) {
@@ -1412,7 +1435,7 @@ public class PipescriptParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(204);
-			match(SCANNER);
+			match(INT_SCANNER);
 			setState(205);
 			match(PIPE);
 
@@ -1438,9 +1461,8 @@ public class PipescriptParser extends Parser {
 	@SuppressWarnings("CheckReturnValue")
 	public static class Function_scanStringContext extends ParserRuleContext {
 		public String funcName;
-		public TerminalNode SCANNER() { return getToken(PipescriptParser.SCANNER, 0); }
+		public TerminalNode STR_SCANNER() { return getToken(PipescriptParser.STR_SCANNER, 0); }
 		public TerminalNode PIPE() { return getToken(PipescriptParser.PIPE, 0); }
-		public TerminalNode STRING() { return getToken(PipescriptParser.STRING, 0); }
 		public Function_scanStringContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
 		public Function_scanStringContext(ParserRuleContext parent, int invokingState, String funcName) {
 			super(parent, invokingState);
@@ -1469,11 +1491,16 @@ public class PipescriptParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(208);
-			match(SCANNER);
+			match(STR_SCANNER);
 			setState(209);
 			match(PIPE);
-			setState(210);
-			match(STRING);
+
+			            System.out.println("new java/util/Scanner");
+			            System.out.println("dup");
+			            System.out.println("getstatic java/lang/System/in Ljava/io/InputStream;");
+			            System.out.println("invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V");
+			            System.out.println("invokevirtual java/util/Scanner/next()Ljava/lang/String;");
+			        
 			}
 		}
 		catch (RecognitionException re) {
@@ -1545,7 +1572,7 @@ public class PipescriptParser extends Parser {
 			setState(228);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 1610613248L) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 412316860928L) != 0)) {
 				{
 				setState(216);
 				_errHandler.sync(this);
@@ -1608,22 +1635,6 @@ public class PipescriptParser extends Parser {
 
 			            final CustomFunction fun = optFun.get();
 
-			            final Function<String, String> getTypeString = (String type) -> {
-			                return switch(type) {
-			                    case "int":
-			                        yield "I";
-			                    case "bool":
-			                        yield "B";
-			                    case "char":
-			                        yield "C";
-			                    case "double":
-			                        yield "F";
-			                    case "str":
-			                        yield "Ljava/lang/String;";
-			                    default:
-			                        yield "V";
-			                };
-			            };
 			            final String receivedTypes = fun.receivedTypes.stream()
 			                .map(v -> getTypeString.apply(v))
 			                .reduce("", String::concat);
@@ -1770,12 +1781,6 @@ public class PipescriptParser extends Parser {
 		public TerminalNode VAR() { return getToken(PipescriptParser.VAR, 0); }
 		public TerminalNode ATTRIB() { return getToken(PipescriptParser.ATTRIB, 0); }
 		public TerminalNode SEMICOLON() { return getToken(PipescriptParser.SEMICOLON, 0); }
-		public TerminalNode BOOL_VAR() { return getToken(PipescriptParser.BOOL_VAR, 0); }
-		public TerminalNode CHAR_VAR() { return getToken(PipescriptParser.CHAR_VAR, 0); }
-		public TerminalNode DOUBLE_VAR() { return getToken(PipescriptParser.DOUBLE_VAR, 0); }
-		public TerminalNode STRING_VAR() { return getToken(PipescriptParser.STRING_VAR, 0); }
-		public TerminalNode VOID_VAR() { return getToken(PipescriptParser.VOID_VAR, 0); }
-		public TerminalNode NULL_VAR() { return getToken(PipescriptParser.NULL_VAR, 0); }
 		public Function_customCallContext function_customCall() {
 			return getRuleContext(Function_customCallContext.class,0);
 		}
@@ -1785,10 +1790,16 @@ public class PipescriptParser extends Parser {
 		public Function_scanStringContext function_scanString() {
 			return getRuleContext(Function_scanStringContext.class,0);
 		}
-		public TerminalNode INT_VAR() { return getToken(PipescriptParser.INT_VAR, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
+		public TerminalNode INT_VAR() { return getToken(PipescriptParser.INT_VAR, 0); }
+		public TerminalNode BOOL_VAR() { return getToken(PipescriptParser.BOOL_VAR, 0); }
+		public TerminalNode CHAR_VAR() { return getToken(PipescriptParser.CHAR_VAR, 0); }
+		public TerminalNode DOUBLE_VAR() { return getToken(PipescriptParser.DOUBLE_VAR, 0); }
+		public TerminalNode STRING_VAR() { return getToken(PipescriptParser.STRING_VAR, 0); }
+		public TerminalNode VOID_VAR() { return getToken(PipescriptParser.VOID_VAR, 0); }
+		public TerminalNode NULL_VAR() { return getToken(PipescriptParser.NULL_VAR, 0); }
 		public AssignmentContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
 		public AssignmentContext(ParserRuleContext parent, int invokingState, String funcName) {
 			super(parent, invokingState);
@@ -1813,85 +1824,51 @@ public class PipescriptParser extends Parser {
 	public final AssignmentContext assignment(String funcName) throws RecognitionException {
 		AssignmentContext _localctx = new AssignmentContext(_ctx, getState(), funcName);
 		enterRule(_localctx, 28, RULE_assignment);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
+			{
+			setState(242);
+			((AssignmentContext)_localctx).op = _input.LT(1);
+			_la = _input.LA(1);
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 136365211648L) != 0)) ) {
+				((AssignmentContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+			}
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
+				consume();
+			}
+			}
+			setState(243);
+			((AssignmentContext)_localctx).VAR = match(VAR);
+			setState(244);
+			match(ATTRIB);
 			setState(249);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case INT_VAR:
-				{
-				setState(242);
-				((AssignmentContext)_localctx).op = match(INT_VAR);
-				}
-				break;
-			case BOOL_VAR:
-				{
-				setState(243);
-				match(BOOL_VAR);
-				}
-				break;
-			case CHAR_VAR:
-				{
-				setState(244);
-				match(CHAR_VAR);
-				}
-				break;
-			case DOUBLE_VAR:
-				{
-				setState(245);
-				match(DOUBLE_VAR);
-				}
-				break;
-			case STRING_VAR:
-				{
-				setState(246);
-				match(STRING_VAR);
-				}
-				break;
-			case VOID_VAR:
-				{
-				setState(247);
-				match(VOID_VAR);
-				}
-				break;
-			case NULL_VAR:
-				{
-				setState(248);
-				match(NULL_VAR);
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-			setState(251);
-			((AssignmentContext)_localctx).VAR = match(VAR);
-			setState(252);
-			match(ATTRIB);
-			setState(257);
-			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,18,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,17,_ctx) ) {
 			case 1:
 				{
-				setState(253);
+				setState(245);
 				((AssignmentContext)_localctx).exp = expression(funcName);
 				}
 				break;
 			case 2:
 				{
-				setState(254);
+				setState(246);
 				function_customCall(funcName);
 				}
 				break;
 			case 3:
 				{
-				setState(255);
+				setState(247);
 				function_scanInteger(funcName);
 				}
 				break;
 			case 4:
 				{
-				setState(256);
+				setState(248);
 				function_scanString(funcName);
 				}
 				break;
@@ -1929,11 +1906,14 @@ public class PipescriptParser extends Parser {
 			                case DOUBLE_VAR:
 			    	            System.out.println("dstore " + currentVar.stackPos);
 			                    break;
+			                case STRING_VAR:
+			                    System.out.println("astore " + currentVar.stackPos);
+			                    break;
 			                default:
 			                    System.err.println("undefined variable " + (((AssignmentContext)_localctx).VAR!=null?((AssignmentContext)_localctx).VAR.getText():null));
 			            }
 			        
-			setState(260);
+			setState(252);
 			match(SEMICOLON);
 			}
 		}
@@ -1994,15 +1974,15 @@ public class PipescriptParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(262);
+			setState(254);
 			term(funcName);
-			setState(269);
+			setState(261);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==PLUS || _la==MINUS) {
 				{
 				{
-				setState(263);
+				setState(255);
 				((ExpressionContext)_localctx).op = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==PLUS || _la==MINUS) ) {
@@ -2013,12 +1993,12 @@ public class PipescriptParser extends Parser {
 					_errHandler.reportMatch(this);
 					consume();
 				}
-				setState(264);
+				setState(256);
 				term(funcName);
 				 System.out.println(((((ExpressionContext)_localctx).op!=null?((ExpressionContext)_localctx).op.getType():0) == PLUS) ? "iadd" : "isub"); 
 				}
 				}
-				setState(271);
+				setState(263);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -2081,15 +2061,15 @@ public class PipescriptParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(272);
+			setState(264);
 			factor(funcName);
-			setState(279);
+			setState(271);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==TIMES || _la==DIV) {
 				{
 				{
-				setState(273);
+				setState(265);
 				((TermContext)_localctx).op = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==TIMES || _la==DIV) ) {
@@ -2100,12 +2080,12 @@ public class PipescriptParser extends Parser {
 					_errHandler.reportMatch(this);
 					consume();
 				}
-				setState(274);
+				setState(266);
 				factor(funcName);
 				 System.out.println(((((TermContext)_localctx).op!=null?((TermContext)_localctx).op.getType():0) == TIMES) ? "imul" : "idiv"); 
 				}
 				}
-				setState(281);
+				setState(273);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -2161,13 +2141,13 @@ public class PipescriptParser extends Parser {
 		FactorContext _localctx = new FactorContext(_ctx, getState(), funcName);
 		enterRule(_localctx, 34, RULE_factor);
 		try {
-			setState(295);
+			setState(287);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,21,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,20,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(282);
+				setState(274);
 				((FactorContext)_localctx).NUM = match(NUM);
 				 System.out.println("ldc " + (((FactorContext)_localctx).NUM!=null?((FactorContext)_localctx).NUM.getText():null)); 
 				}
@@ -2175,26 +2155,29 @@ public class PipescriptParser extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(284);
+				setState(276);
 				((FactorContext)_localctx).VAR = match(VAR);
 
 				    	    Var var = memory.get(funcName)
 				    	        .stream().filter(v -> v.name.equals((((FactorContext)_localctx).VAR!=null?((FactorContext)_localctx).VAR.getText():null))).findFirst().get();
-				            if (var != null)  System.out.println("iload " + var.stackPos);
-				            else System.err.println("undefined variable " + (((FactorContext)_localctx).VAR!=null?((FactorContext)_localctx).VAR.getText():null));
+				            if (var == null) {
+				                System.err.println("undefined variable " + (((FactorContext)_localctx).VAR!=null?((FactorContext)_localctx).VAR.getText():null));
+				            } else {
+				                System.out.println(loadVar.apply(var));
+				            }
 				    	
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(286);
+				setState(278);
 				((FactorContext)_localctx).VAR = match(VAR);
-				setState(287);
+				setState(279);
 				match(OPEN_B);
-				setState(288);
+				setState(280);
 				((FactorContext)_localctx).NUM = match(NUM);
-				setState(289);
+				setState(281);
 				match(CLOSE_B);
 
 				            Var var = memory.get(funcName)
@@ -2209,11 +2192,11 @@ public class PipescriptParser extends Parser {
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(291);
+				setState(283);
 				match(OPEN_P);
-				setState(292);
+				setState(284);
 				expression(funcName);
-				setState(293);
+				setState(285);
 				match(CLOSE_P);
 				}
 				break;
@@ -2231,7 +2214,7 @@ public class PipescriptParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001(\u012a\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0004\u0001)\u0122\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
 		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
 		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
 		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b\u0002"+
@@ -2269,28 +2252,27 @@ public class PipescriptParser extends Parser {
 		"\f\u0001\f\u0001\r\u0001\r\u0001\r\u0001\r\u0001\r\u0001\r\u0003\r\u00ef"+
 		"\b\r\u0001\r\u0001\r\u0001\u000e\u0001\u000e\u0001\u000e\u0001\u000e\u0001"+
 		"\u000e\u0001\u000e\u0001\u000e\u0003\u000e\u00fa\b\u000e\u0001\u000e\u0001"+
-		"\u000e\u0001\u000e\u0001\u000e\u0001\u000e\u0001\u000e\u0003\u000e\u0102"+
-		"\b\u000e\u0001\u000e\u0001\u000e\u0001\u000e\u0001\u000f\u0001\u000f\u0001"+
-		"\u000f\u0001\u000f\u0001\u000f\u0005\u000f\u010c\b\u000f\n\u000f\f\u000f"+
-		"\u010f\t\u000f\u0001\u0010\u0001\u0010\u0001\u0010\u0001\u0010\u0001\u0010"+
-		"\u0005\u0010\u0116\b\u0010\n\u0010\f\u0010\u0119\t\u0010\u0001\u0011\u0001"+
+		"\u000e\u0001\u000e\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001"+
+		"\u000f\u0005\u000f\u0104\b\u000f\n\u000f\f\u000f\u0107\t\u000f\u0001\u0010"+
+		"\u0001\u0010\u0001\u0010\u0001\u0010\u0001\u0010\u0005\u0010\u010e\b\u0010"+
+		"\n\u0010\f\u0010\u0111\t\u0010\u0001\u0011\u0001\u0011\u0001\u0011\u0001"+
 		"\u0011\u0001\u0011\u0001\u0011\u0001\u0011\u0001\u0011\u0001\u0011\u0001"+
-		"\u0011\u0001\u0011\u0001\u0011\u0001\u0011\u0001\u0011\u0001\u0011\u0003"+
-		"\u0011\u0128\b\u0011\u0001\u0011\u0000\u0000\u0012\u0000\u0002\u0004\u0006"+
-		"\b\n\f\u000e\u0010\u0012\u0014\u0016\u0018\u001a\u001c\u001e \"\u0000"+
-		"\u0004\u0001\u0000\"&\u0001\u0000\u000e\u0013\u0001\u0000\u0001\u0002"+
-		"\u0001\u0000\u0003\u0004\u0142\u0000$\u0001\u0000\u0000\u0000\u00023\u0001"+
+		"\u0011\u0001\u0011\u0001\u0011\u0001\u0011\u0003\u0011\u0120\b\u0011\u0001"+
+		"\u0011\u0000\u0000\u0012\u0000\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012"+
+		"\u0014\u0016\u0018\u001a\u001c\u001e \"\u0000\u0005\u0001\u0000\u001e"+
+		"\"\u0001\u0000\u000e\u0013\u0001\u0000\u001e$\u0001\u0000\u0001\u0002"+
+		"\u0001\u0000\u0003\u0004\u0134\u0000$\u0001\u0000\u0000\u0000\u00023\u0001"+
 		"\u0000\u0000\u0000\u0004B\u0001\u0000\u0000\u0000\u0006q\u0001\u0000\u0000"+
 		"\u0000\bs\u0001\u0000\u0000\u0000\n\u0086\u0001\u0000\u0000\u0000\f\u00a5"+
 		"\u0001\u0000\u0000\u0000\u000e\u00b9\u0001\u0000\u0000\u0000\u0010\u00bf"+
 		"\u0001\u0000\u0000\u0000\u0012\u00c6\u0001\u0000\u0000\u0000\u0014\u00cc"+
 		"\u0001\u0000\u0000\u0000\u0016\u00d0\u0001\u0000\u0000\u0000\u0018\u00d4"+
-		"\u0001\u0000\u0000\u0000\u001a\u00ee\u0001\u0000\u0000\u0000\u001c\u00f9"+
-		"\u0001\u0000\u0000\u0000\u001e\u0106\u0001\u0000\u0000\u0000 \u0110\u0001"+
-		"\u0000\u0000\u0000\"\u0127\u0001\u0000\u0000\u0000$(\u0006\u0000\uffff"+
+		"\u0001\u0000\u0000\u0000\u001a\u00ee\u0001\u0000\u0000\u0000\u001c\u00f2"+
+		"\u0001\u0000\u0000\u0000\u001e\u00fe\u0001\u0000\u0000\u0000 \u0108\u0001"+
+		"\u0000\u0000\u0000\"\u011f\u0001\u0000\u0000\u0000$(\u0006\u0000\uffff"+
 		"\uffff\u0000%\'\u0003\u0004\u0002\u0000&%\u0001\u0000\u0000\u0000\'*\u0001"+
 		"\u0000\u0000\u0000(&\u0001\u0000\u0000\u0000()\u0001\u0000\u0000\u0000"+
-		").\u0001\u0000\u0000\u0000*(\u0001\u0000\u0000\u0000+-\u0005 \u0000\u0000"+
+		").\u0001\u0000\u0000\u0000*(\u0001\u0000\u0000\u0000+-\u0005(\u0000\u0000"+
 		",+\u0001\u0000\u0000\u0000-0\u0001\u0000\u0000\u0000.,\u0001\u0000\u0000"+
 		"\u0000./\u0001\u0000\u0000\u0000/1\u0001\u0000\u0000\u00000.\u0001\u0000"+
 		"\u0000\u000012\u0003\u0002\u0001\u00002\u0001\u0001\u0000\u0000\u0000"+
@@ -2298,134 +2280,127 @@ public class PipescriptParser extends Parser {
 		"\u000067\u0005\u0005\u0000\u00007;\u0006\u0001\uffff\uffff\u00008:\u0003"+
 		"\u0006\u0003\u000098\u0001\u0000\u0000\u0000:=\u0001\u0000\u0000\u0000"+
 		";9\u0001\u0000\u0000\u0000;<\u0001\u0000\u0000\u0000<>\u0001\u0000\u0000"+
-		"\u0000=;\u0001\u0000\u0000\u0000>?\u0005\u0006\u0000\u0000?@\u0005 \u0000"+
+		"\u0000=;\u0001\u0000\u0000\u0000>?\u0005\u0006\u0000\u0000?@\u0005(\u0000"+
 		"\u0000@A\u0006\u0001\uffff\uffff\u0000A\u0003\u0001\u0000\u0000\u0000"+
-		"BC\u0006\u0002\uffff\uffff\u0000CD\u0005\u0014\u0000\u0000DE\u0005\u001d"+
-		"\u0000\u0000EP\u0005\u000b\u0000\u0000FG\u0007\u0000\u0000\u0000GM\u0005"+
-		"\u001d\u0000\u0000HI\u0005\u001b\u0000\u0000IJ\u0007\u0000\u0000\u0000"+
-		"JL\u0005\u001d\u0000\u0000KH\u0001\u0000\u0000\u0000LO\u0001\u0000\u0000"+
-		"\u0000MK\u0001\u0000\u0000\u0000MN\u0001\u0000\u0000\u0000NQ\u0001\u0000"+
-		"\u0000\u0000OM\u0001\u0000\u0000\u0000PF\u0001\u0000\u0000\u0000PQ\u0001"+
-		"\u0000\u0000\u0000QR\u0001\u0000\u0000\u0000RY\u0005\u000b\u0000\u0000"+
-		"SZ\u0005\"\u0000\u0000TZ\u0005&\u0000\u0000UZ\u0005%\u0000\u0000VZ\u0005"+
-		"#\u0000\u0000WZ\u0005$\u0000\u0000XZ\u0005\'\u0000\u0000YS\u0001\u0000"+
-		"\u0000\u0000YT\u0001\u0000\u0000\u0000YU\u0001\u0000\u0000\u0000YV\u0001"+
-		"\u0000\u0000\u0000YW\u0001\u0000\u0000\u0000YX\u0001\u0000\u0000\u0000"+
-		"Z[\u0001\u0000\u0000\u0000[\\\u0005\u0005\u0000\u0000\\`\u0006\u0002\uffff"+
-		"\uffff\u0000]_\u0003\u0006\u0003\u0000^]\u0001\u0000\u0000\u0000_b\u0001"+
-		"\u0000\u0000\u0000`^\u0001\u0000\u0000\u0000`a\u0001\u0000\u0000\u0000"+
-		"ac\u0001\u0000\u0000\u0000b`\u0001\u0000\u0000\u0000cd\u0005\r\u0000\u0000"+
-		"de\u0003\u001e\u000f\u0000ef\u0005\u001c\u0000\u0000fg\u0005 \u0000\u0000"+
-		"gh\u0005\u0006\u0000\u0000hi\u0005 \u0000\u0000ij\u0006\u0002\uffff\uffff"+
-		"\u0000j\u0005\u0001\u0000\u0000\u0000kr\u0005 \u0000\u0000lr\u0003\u001a"+
-		"\r\u0000mr\u0003\b\u0004\u0000nr\u0003\n\u0005\u0000or\u0003\f\u0006\u0000"+
-		"pr\u0003\u001c\u000e\u0000qk\u0001\u0000\u0000\u0000ql\u0001\u0000\u0000"+
-		"\u0000qm\u0001\u0000\u0000\u0000qn\u0001\u0000\u0000\u0000qo\u0001\u0000"+
-		"\u0000\u0000qp\u0001\u0000\u0000\u0000r\u0007\u0001\u0000\u0000\u0000"+
-		"st\u0006\u0004\uffff\uffff\u0000tu\u0005\u0018\u0000\u0000uv\u0005\u000b"+
-		"\u0000\u0000vw\u0003\u001e\u000f\u0000wx\u0007\u0001\u0000\u0000xy\u0003"+
-		"\u001e\u000f\u0000yz\u0006\u0004\uffff\uffff\u0000z{\u0005\u0005\u0000"+
-		"\u0000{\u007f\u0005 \u0000\u0000|~\u0003\u0006\u0003\u0000}|\u0001\u0000"+
-		"\u0000\u0000~\u0081\u0001\u0000\u0000\u0000\u007f}\u0001\u0000\u0000\u0000"+
-		"\u007f\u0080\u0001\u0000\u0000\u0000\u0080\u0082\u0001\u0000\u0000\u0000"+
-		"\u0081\u007f\u0001\u0000\u0000\u0000\u0082\u0083\u0005\u0006\u0000\u0000"+
-		"\u0083\u0084\u0005 \u0000\u0000\u0084\u0085\u0006\u0004\uffff\uffff\u0000"+
-		"\u0085\t\u0001\u0000\u0000\u0000\u0086\u0087\u0006\u0005\uffff\uffff\u0000"+
-		"\u0087\u0088\u0005\u0018\u0000\u0000\u0088\u0089\u0005\u000b\u0000\u0000"+
-		"\u0089\u008a\u0003\u001e\u000f\u0000\u008a\u008b\u0007\u0001\u0000\u0000"+
-		"\u008b\u008c\u0003\u001e\u000f\u0000\u008c\u008d\u0006\u0005\uffff\uffff"+
-		"\u0000\u008d\u008e\u0005\u0005\u0000\u0000\u008e\u0092\u0005 \u0000\u0000"+
-		"\u008f\u0091\u0003\u0006\u0003\u0000\u0090\u008f\u0001\u0000\u0000\u0000"+
-		"\u0091\u0094\u0001\u0000\u0000\u0000\u0092\u0090\u0001\u0000\u0000\u0000"+
-		"\u0092\u0093\u0001\u0000\u0000\u0000\u0093\u0095\u0001\u0000\u0000\u0000"+
-		"\u0094\u0092\u0001\u0000\u0000\u0000\u0095\u0096\u0006\u0005\uffff\uffff"+
-		"\u0000\u0096\u0097\u0005\u0006\u0000\u0000\u0097\u0098\u0005\u0019\u0000"+
-		"\u0000\u0098\u0099\u0005\u0005\u0000\u0000\u0099\u009a\u0005 \u0000\u0000"+
-		"\u009a\u009e\u0006\u0005\uffff\uffff\u0000\u009b\u009d\u0003\u0006\u0003"+
-		"\u0000\u009c\u009b\u0001\u0000\u0000\u0000\u009d\u00a0\u0001\u0000\u0000"+
-		"\u0000\u009e\u009c\u0001\u0000\u0000\u0000\u009e\u009f\u0001\u0000\u0000"+
-		"\u0000\u009f\u00a1\u0001\u0000\u0000\u0000\u00a0\u009e\u0001\u0000\u0000"+
-		"\u0000\u00a1\u00a2\u0005\u0006\u0000\u0000\u00a2\u00a3\u0005 \u0000\u0000"+
-		"\u00a3\u00a4\u0006\u0005\uffff\uffff\u0000\u00a4\u000b\u0001\u0000\u0000"+
-		"\u0000\u00a5\u00a6\u0006\u0006\uffff\uffff\u0000\u00a6\u00a7\u0005\u001a"+
-		"\u0000\u0000\u00a7\u00a8\u0005\u000b\u0000\u0000\u00a8\u00a9\u0003\u001e"+
-		"\u000f\u0000\u00a9\u00aa\u0007\u0001\u0000\u0000\u00aa\u00ab\u0003\u001e"+
-		"\u000f\u0000\u00ab\u00ac\u0006\u0006\uffff\uffff\u0000\u00ac\u00ad\u0005"+
-		"\u0005\u0000\u0000\u00ad\u00b1\u0005 \u0000\u0000\u00ae\u00b0\u0003\u0006"+
-		"\u0003\u0000\u00af\u00ae\u0001\u0000\u0000\u0000\u00b0\u00b3\u0001\u0000"+
-		"\u0000\u0000\u00b1\u00af\u0001\u0000\u0000\u0000\u00b1\u00b2\u0001\u0000"+
-		"\u0000\u0000\u00b2\u00b4\u0001\u0000\u0000\u0000\u00b3\u00b1\u0001\u0000"+
-		"\u0000\u0000\u00b4\u00b5\u0006\u0006\uffff\uffff\u0000\u00b5\u00b6\u0005"+
-		"\u0006\u0000\u0000\u00b6\u00b7\u0005 \u0000\u0000\u00b7\u00b8\u0006\u0006"+
-		"\uffff\uffff\u0000\u00b8\r\u0001\u0000\u0000\u0000\u00b9\u00ba\u0005\u0016"+
-		"\u0000\u0000\u00ba\u00bb\u0005\u000b\u0000\u0000\u00bb\u00bc\u0006\u0007"+
-		"\uffff\uffff\u0000\u00bc\u00bd\u0003\u001e\u000f\u0000\u00bd\u00be\u0006"+
-		"\u0007\uffff\uffff\u0000\u00be\u000f\u0001\u0000\u0000\u0000\u00bf\u00c0"+
-		"\u0005\u0016\u0000\u0000\u00c0\u00c1\u0005\u000b\u0000\u0000\u00c1\u00c2"+
-		"\u0006\b\uffff\uffff\u0000\u00c2\u00c3\u0005\u001f\u0000\u0000\u00c3\u00c4"+
-		"\u0006\b\uffff\uffff\u0000\u00c4\u00c5\u0006\b\uffff\uffff\u0000\u00c5"+
-		"\u0011\u0001\u0000\u0000\u0000\u00c6\u00c7\u0005\u0016\u0000\u0000\u00c7"+
-		"\u00c8\u0005\u000b\u0000\u0000\u00c8\u00c9\u0006\t\uffff\uffff\u0000\u00c9"+
-		"\u00ca\u0005\u001d\u0000\u0000\u00ca\u00cb\u0006\t\uffff\uffff\u0000\u00cb"+
-		"\u0013\u0001\u0000\u0000\u0000\u00cc\u00cd\u0005\u0017\u0000\u0000\u00cd"+
-		"\u00ce\u0005\u000b\u0000\u0000\u00ce\u00cf\u0006\n\uffff\uffff\u0000\u00cf"+
-		"\u0015\u0001\u0000\u0000\u0000\u00d0\u00d1\u0005\u0017\u0000\u0000\u00d1"+
-		"\u00d2\u0005\u000b\u0000\u0000\u00d2\u00d3\u0005\u001f\u0000\u0000\u00d3"+
-		"\u0017\u0001\u0000\u0000\u0000\u00d4\u00d5\u0005\u001d\u0000\u0000\u00d5"+
-		"\u00e4\u0005\u000b\u0000\u0000\u00d6\u00d9\u0005\u001d\u0000\u0000\u00d7"+
-		"\u00d9\u0003\u001e\u000f\u0000\u00d8\u00d6\u0001\u0000\u0000\u0000\u00d8"+
-		"\u00d7\u0001\u0000\u0000\u0000\u00d9\u00e1\u0001\u0000\u0000\u0000\u00da"+
-		"\u00dd\u0005\u001b\u0000\u0000\u00db\u00de\u0005\u001d\u0000\u0000\u00dc"+
-		"\u00de\u0003\u001e\u000f\u0000\u00dd\u00db\u0001\u0000\u0000\u0000\u00dd"+
-		"\u00dc\u0001\u0000\u0000\u0000\u00de\u00e0\u0001\u0000\u0000\u0000\u00df"+
-		"\u00da\u0001\u0000\u0000\u0000\u00e0\u00e3\u0001\u0000\u0000\u0000\u00e1"+
-		"\u00df\u0001\u0000\u0000\u0000\u00e1\u00e2\u0001\u0000\u0000\u0000\u00e2"+
-		"\u00e5\u0001\u0000\u0000\u0000\u00e3\u00e1\u0001\u0000\u0000\u0000\u00e4"+
-		"\u00d8\u0001\u0000\u0000\u0000\u00e4\u00e5\u0001\u0000\u0000\u0000\u00e5"+
-		"\u00e6\u0001\u0000\u0000\u0000\u00e6\u00e7\u0006\f\uffff\uffff\u0000\u00e7"+
-		"\u0019\u0001\u0000\u0000\u0000\u00e8\u00ef\u0003\u000e\u0007\u0000\u00e9"+
-		"\u00ef\u0003\u0010\b\u0000\u00ea\u00ef\u0003\u0012\t\u0000\u00eb\u00ef"+
-		"\u0003\u0014\n\u0000\u00ec\u00ef\u0003\u0016\u000b\u0000\u00ed\u00ef\u0003"+
-		"\u0018\f\u0000\u00ee\u00e8\u0001\u0000\u0000\u0000\u00ee\u00e9\u0001\u0000"+
-		"\u0000\u0000\u00ee\u00ea\u0001\u0000\u0000\u0000\u00ee\u00eb\u0001\u0000"+
-		"\u0000\u0000\u00ee\u00ec\u0001\u0000\u0000\u0000\u00ee\u00ed\u0001\u0000"+
-		"\u0000\u0000\u00ef\u00f0\u0001\u0000\u0000\u0000\u00f0\u00f1\u0005\u001c"+
-		"\u0000\u0000\u00f1\u001b\u0001\u0000\u0000\u0000\u00f2\u00fa\u0005\"\u0000"+
-		"\u0000\u00f3\u00fa\u0005&\u0000\u0000\u00f4\u00fa\u0005%\u0000\u0000\u00f5"+
-		"\u00fa\u0005#\u0000\u0000\u00f6\u00fa\u0005$\u0000\u0000\u00f7\u00fa\u0005"+
-		"\'\u0000\u0000\u00f8\u00fa\u0005(\u0000\u0000\u00f9\u00f2\u0001\u0000"+
-		"\u0000\u0000\u00f9\u00f3\u0001\u0000\u0000\u0000\u00f9\u00f4\u0001\u0000"+
-		"\u0000\u0000\u00f9\u00f5\u0001\u0000\u0000\u0000\u00f9\u00f6\u0001\u0000"+
-		"\u0000\u0000\u00f9\u00f7\u0001\u0000\u0000\u0000\u00f9\u00f8\u0001\u0000"+
-		"\u0000\u0000\u00fa\u00fb\u0001\u0000\u0000\u0000\u00fb\u00fc\u0005\u001d"+
-		"\u0000\u0000\u00fc\u0101\u0005\f\u0000\u0000\u00fd\u0102\u0003\u001e\u000f"+
-		"\u0000\u00fe\u0102\u0003\u0018\f\u0000\u00ff\u0102\u0003\u0014\n\u0000"+
-		"\u0100\u0102\u0003\u0016\u000b\u0000\u0101\u00fd\u0001\u0000\u0000\u0000"+
-		"\u0101\u00fe\u0001\u0000\u0000\u0000\u0101\u00ff\u0001\u0000\u0000\u0000"+
-		"\u0101\u0100\u0001\u0000\u0000\u0000\u0102\u0103\u0001\u0000\u0000\u0000"+
-		"\u0103\u0104\u0006\u000e\uffff\uffff\u0000\u0104\u0105\u0005\u001c\u0000"+
-		"\u0000\u0105\u001d\u0001\u0000\u0000\u0000\u0106\u010d\u0003 \u0010\u0000"+
-		"\u0107\u0108\u0007\u0002\u0000\u0000\u0108\u0109\u0003 \u0010\u0000\u0109"+
-		"\u010a\u0006\u000f\uffff\uffff\u0000\u010a\u010c\u0001\u0000\u0000\u0000"+
-		"\u010b\u0107\u0001\u0000\u0000\u0000\u010c\u010f\u0001\u0000\u0000\u0000"+
-		"\u010d\u010b\u0001\u0000\u0000\u0000\u010d\u010e\u0001\u0000\u0000\u0000"+
-		"\u010e\u001f\u0001\u0000\u0000\u0000\u010f\u010d\u0001\u0000\u0000\u0000"+
-		"\u0110\u0117\u0003\"\u0011\u0000\u0111\u0112\u0007\u0003\u0000\u0000\u0112"+
-		"\u0113\u0003\"\u0011\u0000\u0113\u0114\u0006\u0010\uffff\uffff\u0000\u0114"+
-		"\u0116\u0001\u0000\u0000\u0000\u0115\u0111\u0001\u0000\u0000\u0000\u0116"+
-		"\u0119\u0001\u0000\u0000\u0000\u0117\u0115\u0001\u0000\u0000\u0000\u0117"+
-		"\u0118\u0001\u0000\u0000\u0000\u0118!\u0001\u0000\u0000\u0000\u0119\u0117"+
-		"\u0001\u0000\u0000\u0000\u011a\u011b\u0005\u001e\u0000\u0000\u011b\u0128"+
-		"\u0006\u0011\uffff\uffff\u0000\u011c\u011d\u0005\u001d\u0000\u0000\u011d"+
-		"\u0128\u0006\u0011\uffff\uffff\u0000\u011e\u011f\u0005\u001d\u0000\u0000"+
-		"\u011f\u0120\u0005\u0007\u0000\u0000\u0120\u0121\u0005\u001e\u0000\u0000"+
-		"\u0121\u0122\u0005\b\u0000\u0000\u0122\u0128\u0006\u0011\uffff\uffff\u0000"+
-		"\u0123\u0124\u0005\t\u0000\u0000\u0124\u0125\u0003\u001e\u000f\u0000\u0125"+
-		"\u0126\u0005\n\u0000\u0000\u0126\u0128\u0001\u0000\u0000\u0000\u0127\u011a"+
-		"\u0001\u0000\u0000\u0000\u0127\u011c\u0001\u0000\u0000\u0000\u0127\u011e"+
-		"\u0001\u0000\u0000\u0000\u0127\u0123\u0001\u0000\u0000\u0000\u0128#\u0001"+
-		"\u0000\u0000\u0000\u0016(.;MPY`q\u007f\u0092\u009e\u00b1\u00d8\u00dd\u00e1"+
-		"\u00e4\u00ee\u00f9\u0101\u010d\u0117\u0127";
+		"BC\u0006\u0002\uffff\uffff\u0000CD\u0005\u0014\u0000\u0000DE\u0005&\u0000"+
+		"\u0000EP\u0005\u000b\u0000\u0000FG\u0007\u0000\u0000\u0000GM\u0005&\u0000"+
+		"\u0000HI\u0005\u001c\u0000\u0000IJ\u0007\u0000\u0000\u0000JL\u0005&\u0000"+
+		"\u0000KH\u0001\u0000\u0000\u0000LO\u0001\u0000\u0000\u0000MK\u0001\u0000"+
+		"\u0000\u0000MN\u0001\u0000\u0000\u0000NQ\u0001\u0000\u0000\u0000OM\u0001"+
+		"\u0000\u0000\u0000PF\u0001\u0000\u0000\u0000PQ\u0001\u0000\u0000\u0000"+
+		"QR\u0001\u0000\u0000\u0000RY\u0005\u000b\u0000\u0000SZ\u0005\u001e\u0000"+
+		"\u0000TZ\u0005\"\u0000\u0000UZ\u0005!\u0000\u0000VZ\u0005\u001f\u0000"+
+		"\u0000WZ\u0005 \u0000\u0000XZ\u0005#\u0000\u0000YS\u0001\u0000\u0000\u0000"+
+		"YT\u0001\u0000\u0000\u0000YU\u0001\u0000\u0000\u0000YV\u0001\u0000\u0000"+
+		"\u0000YW\u0001\u0000\u0000\u0000YX\u0001\u0000\u0000\u0000Z[\u0001\u0000"+
+		"\u0000\u0000[\\\u0005\u0005\u0000\u0000\\`\u0006\u0002\uffff\uffff\u0000"+
+		"]_\u0003\u0006\u0003\u0000^]\u0001\u0000\u0000\u0000_b\u0001\u0000\u0000"+
+		"\u0000`^\u0001\u0000\u0000\u0000`a\u0001\u0000\u0000\u0000ac\u0001\u0000"+
+		"\u0000\u0000b`\u0001\u0000\u0000\u0000cd\u0005\r\u0000\u0000de\u0003\u001e"+
+		"\u000f\u0000ef\u0005\u001d\u0000\u0000fg\u0005(\u0000\u0000gh\u0005\u0006"+
+		"\u0000\u0000hi\u0005(\u0000\u0000ij\u0006\u0002\uffff\uffff\u0000j\u0005"+
+		"\u0001\u0000\u0000\u0000kr\u0005(\u0000\u0000lr\u0003\u001a\r\u0000mr"+
+		"\u0003\b\u0004\u0000nr\u0003\n\u0005\u0000or\u0003\f\u0006\u0000pr\u0003"+
+		"\u001c\u000e\u0000qk\u0001\u0000\u0000\u0000ql\u0001\u0000\u0000\u0000"+
+		"qm\u0001\u0000\u0000\u0000qn\u0001\u0000\u0000\u0000qo\u0001\u0000\u0000"+
+		"\u0000qp\u0001\u0000\u0000\u0000r\u0007\u0001\u0000\u0000\u0000st\u0006"+
+		"\u0004\uffff\uffff\u0000tu\u0005\u0019\u0000\u0000uv\u0005\u000b\u0000"+
+		"\u0000vw\u0003\u001e\u000f\u0000wx\u0007\u0001\u0000\u0000xy\u0003\u001e"+
+		"\u000f\u0000yz\u0006\u0004\uffff\uffff\u0000z{\u0005\u0005\u0000\u0000"+
+		"{\u007f\u0005(\u0000\u0000|~\u0003\u0006\u0003\u0000}|\u0001\u0000\u0000"+
+		"\u0000~\u0081\u0001\u0000\u0000\u0000\u007f}\u0001\u0000\u0000\u0000\u007f"+
+		"\u0080\u0001\u0000\u0000\u0000\u0080\u0082\u0001\u0000\u0000\u0000\u0081"+
+		"\u007f\u0001\u0000\u0000\u0000\u0082\u0083\u0005\u0006\u0000\u0000\u0083"+
+		"\u0084\u0005(\u0000\u0000\u0084\u0085\u0006\u0004\uffff\uffff\u0000\u0085"+
+		"\t\u0001\u0000\u0000\u0000\u0086\u0087\u0006\u0005\uffff\uffff\u0000\u0087"+
+		"\u0088\u0005\u0019\u0000\u0000\u0088\u0089\u0005\u000b\u0000\u0000\u0089"+
+		"\u008a\u0003\u001e\u000f\u0000\u008a\u008b\u0007\u0001\u0000\u0000\u008b"+
+		"\u008c\u0003\u001e\u000f\u0000\u008c\u008d\u0006\u0005\uffff\uffff\u0000"+
+		"\u008d\u008e\u0005\u0005\u0000\u0000\u008e\u0092\u0005(\u0000\u0000\u008f"+
+		"\u0091\u0003\u0006\u0003\u0000\u0090\u008f\u0001\u0000\u0000\u0000\u0091"+
+		"\u0094\u0001\u0000\u0000\u0000\u0092\u0090\u0001\u0000\u0000\u0000\u0092"+
+		"\u0093\u0001\u0000\u0000\u0000\u0093\u0095\u0001\u0000\u0000\u0000\u0094"+
+		"\u0092\u0001\u0000\u0000\u0000\u0095\u0096\u0006\u0005\uffff\uffff\u0000"+
+		"\u0096\u0097\u0005\u0006\u0000\u0000\u0097\u0098\u0005\u001a\u0000\u0000"+
+		"\u0098\u0099\u0005\u0005\u0000\u0000\u0099\u009a\u0005(\u0000\u0000\u009a"+
+		"\u009e\u0006\u0005\uffff\uffff\u0000\u009b\u009d\u0003\u0006\u0003\u0000"+
+		"\u009c\u009b\u0001\u0000\u0000\u0000\u009d\u00a0\u0001\u0000\u0000\u0000"+
+		"\u009e\u009c\u0001\u0000\u0000\u0000\u009e\u009f\u0001\u0000\u0000\u0000"+
+		"\u009f\u00a1\u0001\u0000\u0000\u0000\u00a0\u009e\u0001\u0000\u0000\u0000"+
+		"\u00a1\u00a2\u0005\u0006\u0000\u0000\u00a2\u00a3\u0005(\u0000\u0000\u00a3"+
+		"\u00a4\u0006\u0005\uffff\uffff\u0000\u00a4\u000b\u0001\u0000\u0000\u0000"+
+		"\u00a5\u00a6\u0006\u0006\uffff\uffff\u0000\u00a6\u00a7\u0005\u001b\u0000"+
+		"\u0000\u00a7\u00a8\u0005\u000b\u0000\u0000\u00a8\u00a9\u0003\u001e\u000f"+
+		"\u0000\u00a9\u00aa\u0007\u0001\u0000\u0000\u00aa\u00ab\u0003\u001e\u000f"+
+		"\u0000\u00ab\u00ac\u0006\u0006\uffff\uffff\u0000\u00ac\u00ad\u0005\u0005"+
+		"\u0000\u0000\u00ad\u00b1\u0005(\u0000\u0000\u00ae\u00b0\u0003\u0006\u0003"+
+		"\u0000\u00af\u00ae\u0001\u0000\u0000\u0000\u00b0\u00b3\u0001\u0000\u0000"+
+		"\u0000\u00b1\u00af\u0001\u0000\u0000\u0000\u00b1\u00b2\u0001\u0000\u0000"+
+		"\u0000\u00b2\u00b4\u0001\u0000\u0000\u0000\u00b3\u00b1\u0001\u0000\u0000"+
+		"\u0000\u00b4\u00b5\u0006\u0006\uffff\uffff\u0000\u00b5\u00b6\u0005\u0006"+
+		"\u0000\u0000\u00b6\u00b7\u0005(\u0000\u0000\u00b7\u00b8\u0006\u0006\uffff"+
+		"\uffff\u0000\u00b8\r\u0001\u0000\u0000\u0000\u00b9\u00ba\u0005\u0016\u0000"+
+		"\u0000\u00ba\u00bb\u0005\u000b\u0000\u0000\u00bb\u00bc\u0006\u0007\uffff"+
+		"\uffff\u0000\u00bc\u00bd\u0003\u001e\u000f\u0000\u00bd\u00be\u0006\u0007"+
+		"\uffff\uffff\u0000\u00be\u000f\u0001\u0000\u0000\u0000\u00bf\u00c0\u0005"+
+		"\u0016\u0000\u0000\u00c0\u00c1\u0005\u000b\u0000\u0000\u00c1\u00c2\u0006"+
+		"\b\uffff\uffff\u0000\u00c2\u00c3\u0005\'\u0000\u0000\u00c3\u00c4\u0006"+
+		"\b\uffff\uffff\u0000\u00c4\u00c5\u0006\b\uffff\uffff\u0000\u00c5\u0011"+
+		"\u0001\u0000\u0000\u0000\u00c6\u00c7\u0005\u0016\u0000\u0000\u00c7\u00c8"+
+		"\u0005\u000b\u0000\u0000\u00c8\u00c9\u0006\t\uffff\uffff\u0000\u00c9\u00ca"+
+		"\u0005&\u0000\u0000\u00ca\u00cb\u0006\t\uffff\uffff\u0000\u00cb\u0013"+
+		"\u0001\u0000\u0000\u0000\u00cc\u00cd\u0005\u0017\u0000\u0000\u00cd\u00ce"+
+		"\u0005\u000b\u0000\u0000\u00ce\u00cf\u0006\n\uffff\uffff\u0000\u00cf\u0015"+
+		"\u0001\u0000\u0000\u0000\u00d0\u00d1\u0005\u0018\u0000\u0000\u00d1\u00d2"+
+		"\u0005\u000b\u0000\u0000\u00d2\u00d3\u0006\u000b\uffff\uffff\u0000\u00d3"+
+		"\u0017\u0001\u0000\u0000\u0000\u00d4\u00d5\u0005&\u0000\u0000\u00d5\u00e4"+
+		"\u0005\u000b\u0000\u0000\u00d6\u00d9\u0005&\u0000\u0000\u00d7\u00d9\u0003"+
+		"\u001e\u000f\u0000\u00d8\u00d6\u0001\u0000\u0000\u0000\u00d8\u00d7\u0001"+
+		"\u0000\u0000\u0000\u00d9\u00e1\u0001\u0000\u0000\u0000\u00da\u00dd\u0005"+
+		"\u001c\u0000\u0000\u00db\u00de\u0005&\u0000\u0000\u00dc\u00de\u0003\u001e"+
+		"\u000f\u0000\u00dd\u00db\u0001\u0000\u0000\u0000\u00dd\u00dc\u0001\u0000"+
+		"\u0000\u0000\u00de\u00e0\u0001\u0000\u0000\u0000\u00df\u00da\u0001\u0000"+
+		"\u0000\u0000\u00e0\u00e3\u0001\u0000\u0000\u0000\u00e1\u00df\u0001\u0000"+
+		"\u0000\u0000\u00e1\u00e2\u0001\u0000\u0000\u0000\u00e2\u00e5\u0001\u0000"+
+		"\u0000\u0000\u00e3\u00e1\u0001\u0000\u0000\u0000\u00e4\u00d8\u0001\u0000"+
+		"\u0000\u0000\u00e4\u00e5\u0001\u0000\u0000\u0000\u00e5\u00e6\u0001\u0000"+
+		"\u0000\u0000\u00e6\u00e7\u0006\f\uffff\uffff\u0000\u00e7\u0019\u0001\u0000"+
+		"\u0000\u0000\u00e8\u00ef\u0003\u000e\u0007\u0000\u00e9\u00ef\u0003\u0010"+
+		"\b\u0000\u00ea\u00ef\u0003\u0012\t\u0000\u00eb\u00ef\u0003\u0014\n\u0000"+
+		"\u00ec\u00ef\u0003\u0016\u000b\u0000\u00ed\u00ef\u0003\u0018\f\u0000\u00ee"+
+		"\u00e8\u0001\u0000\u0000\u0000\u00ee\u00e9\u0001\u0000\u0000\u0000\u00ee"+
+		"\u00ea\u0001\u0000\u0000\u0000\u00ee\u00eb\u0001\u0000\u0000\u0000\u00ee"+
+		"\u00ec\u0001\u0000\u0000\u0000\u00ee\u00ed\u0001\u0000\u0000\u0000\u00ef"+
+		"\u00f0\u0001\u0000\u0000\u0000\u00f0\u00f1\u0005\u001d\u0000\u0000\u00f1"+
+		"\u001b\u0001\u0000\u0000\u0000\u00f2\u00f3\u0007\u0002\u0000\u0000\u00f3"+
+		"\u00f4\u0005&\u0000\u0000\u00f4\u00f9\u0005\f\u0000\u0000\u00f5\u00fa"+
+		"\u0003\u001e\u000f\u0000\u00f6\u00fa\u0003\u0018\f\u0000\u00f7\u00fa\u0003"+
+		"\u0014\n\u0000\u00f8\u00fa\u0003\u0016\u000b\u0000\u00f9\u00f5\u0001\u0000"+
+		"\u0000\u0000\u00f9\u00f6\u0001\u0000\u0000\u0000\u00f9\u00f7\u0001\u0000"+
+		"\u0000\u0000\u00f9\u00f8\u0001\u0000\u0000\u0000\u00fa\u00fb\u0001\u0000"+
+		"\u0000\u0000\u00fb\u00fc\u0006\u000e\uffff\uffff\u0000\u00fc\u00fd\u0005"+
+		"\u001d\u0000\u0000\u00fd\u001d\u0001\u0000\u0000\u0000\u00fe\u0105\u0003"+
+		" \u0010\u0000\u00ff\u0100\u0007\u0003\u0000\u0000\u0100\u0101\u0003 \u0010"+
+		"\u0000\u0101\u0102\u0006\u000f\uffff\uffff\u0000\u0102\u0104\u0001\u0000"+
+		"\u0000\u0000\u0103\u00ff\u0001\u0000\u0000\u0000\u0104\u0107\u0001\u0000"+
+		"\u0000\u0000\u0105\u0103\u0001\u0000\u0000\u0000\u0105\u0106\u0001\u0000"+
+		"\u0000\u0000\u0106\u001f\u0001\u0000\u0000\u0000\u0107\u0105\u0001\u0000"+
+		"\u0000\u0000\u0108\u010f\u0003\"\u0011\u0000\u0109\u010a\u0007\u0004\u0000"+
+		"\u0000\u010a\u010b\u0003\"\u0011\u0000\u010b\u010c\u0006\u0010\uffff\uffff"+
+		"\u0000\u010c\u010e\u0001\u0000\u0000\u0000\u010d\u0109\u0001\u0000\u0000"+
+		"\u0000\u010e\u0111\u0001\u0000\u0000\u0000\u010f\u010d\u0001\u0000\u0000"+
+		"\u0000\u010f\u0110\u0001\u0000\u0000\u0000\u0110!\u0001\u0000\u0000\u0000"+
+		"\u0111\u010f\u0001\u0000\u0000\u0000\u0112\u0113\u0005%\u0000\u0000\u0113"+
+		"\u0120\u0006\u0011\uffff\uffff\u0000\u0114\u0115\u0005&\u0000\u0000\u0115"+
+		"\u0120\u0006\u0011\uffff\uffff\u0000\u0116\u0117\u0005&\u0000\u0000\u0117"+
+		"\u0118\u0005\u0007\u0000\u0000\u0118\u0119\u0005%\u0000\u0000\u0119\u011a"+
+		"\u0005\b\u0000\u0000\u011a\u0120\u0006\u0011\uffff\uffff\u0000\u011b\u011c"+
+		"\u0005\t\u0000\u0000\u011c\u011d\u0003\u001e\u000f\u0000\u011d\u011e\u0005"+
+		"\n\u0000\u0000\u011e\u0120\u0001\u0000\u0000\u0000\u011f\u0112\u0001\u0000"+
+		"\u0000\u0000\u011f\u0114\u0001\u0000\u0000\u0000\u011f\u0116\u0001\u0000"+
+		"\u0000\u0000\u011f\u011b\u0001\u0000\u0000\u0000\u0120#\u0001\u0000\u0000"+
+		"\u0000\u0015(.;MPY`q\u007f\u0092\u009e\u00b1\u00d8\u00dd\u00e1\u00e4\u00ee"+
+		"\u00f9\u0105\u010f\u011f";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -35,6 +35,23 @@ grammar Pipescript;
         }
     };
 
+    final Function<String, String> getTypeString = (String type) -> {
+        return switch(type) {
+            case "int":
+                yield "I";
+            case "bool":
+                yield "B";
+            case "char":
+                yield "C";
+            case "double":
+                yield "F";
+            case "str":
+                yield "Ljava/lang/String;";
+            default:
+                yield "V";
+        };
+    };
+
     public static class CustomFunction {
         public String name;
         public List<String> receivedTypes;
@@ -112,17 +129,13 @@ GREATER_EQUAL : 'gte' ;
 FUNC          : 'fun' ;
 MAIN          : 'main' ;
 PRINT         : 'text' ;
-SCANNER       : 'textIn';
+INT_SCANNER   : 'textInInt';
+STR_SCANNER  : 'textInStr';
 IF            : 'if' ;
 ELSE          : 'else' ;
 WHILE         : 'while' ;
 COMMA         : ',' ;
 SEMICOLON     : ';' ;
-VAR           : [a-zA-Z]+ ~[type | FUNC | ',' | ';'] ;
-NUM           : '0'..'9'+ ;
-STRING        : '"' ~["]* '"' ;
-NL            : ('\r')? '\n' ;
-WS            : [ \t\r]+ -> skip ; // skip spaces and tabs
 INT_VAR       : 'int' ;
 DOUBLE_VAR    : 'double' ;
 STRING_VAR    : 'str' ;
@@ -130,6 +143,11 @@ CHAR_VAR      : 'char' ;
 BOOL_VAR      : 'bool' ;
 VOID_VAR      : 'void' ;
 NULL_VAR      : 'null' ;
+NUM           : '0'..'9'+ ;
+VAR           : [a-zA-Z]+ ~[type | FUNC | ',' | ';'] ;
+STRING        : '"' ~["]* '"' ;
+NL            : ('\r')? '\n' ;
+WS            : [ \t\r]+ -> skip ; // skip spaces and tabs
 
 /*---------------- PARSER RULES ----------------*/
 
@@ -218,22 +236,6 @@ function
                         yield "V";
                 };
 
-                final Function<String, String> getTypeString = (String type) -> {
-                    return switch(type) {
-                        case "int":
-                            yield "I";
-                        case "bool":
-                            yield "B";
-                        case "char":
-                            yield "C";
-                        case "double":
-                            yield "F";
-                        case "str":
-                            yield "Ljava/lang/String;";
-                        default:
-                            yield "V";
-                    };
-                };
                 String receivedTypes = receivedVars.stream()
                     .map(v -> getTypeString.apply(v.type))
                     .reduce("", String::concat);
@@ -339,8 +341,27 @@ function_printInteger [String funcName]
         PRINT PIPE
             { System.out.println("getstatic java/lang/System/out Ljava/io/PrintStream;"); }
 
-        expression[funcName]
-            { System.out.println("invokevirtual java/io/PrintStream/println(I)V\n"); }
+        (var = expression[funcName])
+            {
+                final String expressionResult = $var.text;
+
+                if (expressionResult.matches("^[a-zA-Z]+$")) {
+                    final List<Var> memoryVars = memory.get(funcName);
+
+                    final Var var = memoryVars.stream().filter(v -> v.name.equals(expressionResult)).findFirst()
+                        .orElse(null);
+                    if (var == null) {
+                        System.err.println("Unknown variable " + expressionResult + " in function call text");
+                        throw new RuntimeException("Unknown variable " + expressionResult + " in function call text");
+                    }
+
+                    final String returnType = getTypeString.apply(var.type);
+
+                    System.out.println("invokevirtual java/io/PrintStream/println("+ returnType +")V\n");
+                } else {
+                    System.out.println("invokevirtual java/io/PrintStream/println(I)V\n");
+                }
+            }
     ;
 
 function_printString
@@ -375,7 +396,7 @@ function_printVar [String funcName]
 
 function_scanInteger [String funcName]
     :
-        SCANNER PIPE
+        INT_SCANNER PIPE
         {
             System.out.println("new java/util/Scanner");
             System.out.println("dup");
@@ -387,7 +408,14 @@ function_scanInteger [String funcName]
 
 function_scanString [String funcName]
     :
-        SCANNER PIPE STRING
+        STR_SCANNER PIPE
+        {
+            System.out.println("new java/util/Scanner");
+            System.out.println("dup");
+            System.out.println("getstatic java/lang/System/in Ljava/io/InputStream;");
+            System.out.println("invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V");
+            System.out.println("invokevirtual java/util/Scanner/next()Ljava/lang/String;");
+        }
     ;
 
 function_customCall [String funcName]
@@ -403,22 +431,6 @@ function_customCall [String funcName]
 
             final CustomFunction fun = optFun.get();
 
-            final Function<String, String> getTypeString = (String type) -> {
-                return switch(type) {
-                    case "int":
-                        yield "I";
-                    case "bool":
-                        yield "B";
-                    case "char":
-                        yield "C";
-                    case "double":
-                        yield "F";
-                    case "str":
-                        yield "Ljava/lang/String;";
-                    default:
-                        yield "V";
-                };
-            };
             final String receivedTypes = fun.receivedTypes.stream()
                 .map(v -> getTypeString.apply(v))
                 .reduce("", String::concat);
@@ -454,7 +466,7 @@ call_function [String funcName]
 
 assignment [String funcName]
     :
-        (op = INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR) VAR
+        (op = (INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR)) VAR
         ATTRIB ( exp = expression[funcName] | function_customCall[funcName] | function_scanInteger[funcName] | function_scanString[funcName] )
     	{
     	    List<Var> vars = memory.get(funcName);
@@ -489,6 +501,9 @@ assignment [String funcName]
                 case DOUBLE_VAR:
     	            System.out.println("dstore " + currentVar.stackPos);
                     break;
+                case STRING_VAR:
+                    System.out.println("astore " + currentVar.stackPos);
+                    break;
                 default:
                     System.err.println("undefined variable " + $VAR.text);
             }
@@ -518,8 +533,11 @@ factor [String funcName]
     	{
     	    Var var = memory.get(funcName)
     	        .stream().filter(v -> v.name.equals($VAR.text)).findFirst().get();
-            if (var != null)  System.out.println("iload " + var.stackPos);
-            else System.err.println("undefined variable " + $VAR.text);
+            if (var == null) {
+                System.err.println("undefined variable " + $VAR.text);
+            } else {
+                System.out.println(loadVar.apply(var));
+            }
     	} |
 
         VAR OPEN_B NUM CLOSE_B
