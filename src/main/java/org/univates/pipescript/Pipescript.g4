@@ -178,7 +178,7 @@ program
             System.out.println("return");
             System.out.println(".end method\n");
         }
-        (function)* (NL)* main
+        (function (NL)*)*  main
     ;
 
 main
@@ -435,7 +435,8 @@ function_scanString [String funcName]
 
 function_customCall [String funcName]
     :
-        (funcCall = VAR) PIPE ((vars += VAR | expression[funcName]) (COMMA (vars += VAR | expression[funcName]))*)?
+        (funcCall = VAR) PIPE ((factor[funcName] | expression[funcName] | (function_customCall[funcName] SEMICOLON))
+        (COMMA (factor[funcName] | expression[funcName]) | (function_customCall[funcName] SEMICOLON))*)?
         {
 
             final Optional<CustomFunction> optFun = functions.stream().filter(f -> f.name.equals($funcCall.text)).findFirst();
@@ -450,19 +451,6 @@ function_customCall [String funcName]
                 .map(v -> getTypeString.apply(v))
                 .reduce("", String::concat);
             final String returnType = getTypeString.apply(fun.returnType);
-
-            final List<Var> memoryVars = memory.get(funcName);
-            for (int i = 0; i < $vars.size(); i++) {
-                final String varName = $vars.get(i).getText();
-                final Var currentVar = memoryVars.stream().filter(mv -> mv.name.equals(varName)).findFirst()
-                    .orElse(null);
-                if (currentVar == null) {
-                   System.err.println("Unknown variable " + varName + " in function call " + $funcCall.text);
-                   throw new RuntimeException("Unknown variable " + varName + " in function call " + $funcCall.text);
-                }
-
-                System.out.println(loadVar.apply(currentVar));
-            }
 
             System.out.println("invokestatic Output/"+ fun.name +"("+ receivedTypes +")"+ returnType +"\n");
         }

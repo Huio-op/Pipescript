@@ -17,6 +17,15 @@ ireturn
 .limit stack 50
 .limit locals 50
 .end method
+.method public static mul(II)I
+
+iload 0
+iload 1
+imul
+ireturn
+.limit stack 50
+.limit locals 50
+.end method
 .method public static main([Ljava/lang/String;)V
 
 getstatic java/lang/System/out Ljava/io/PrintStream;
@@ -29,26 +38,33 @@ getstatic java/lang/System/in Ljava/io/InputStream;
 invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V
 invokevirtual java/util/Scanner/nextInt()I
 istore 0
-getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "Adding one to the number"
-invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-
-ldc 1
 iload 0
+ldc 2
+invokestatic Output/mul(II)I
+
+ldc 5
 invokestatic Output/sum(II)I
 
-istore 1
-iload 1
-ldc 4
+istore 0
+getstatic java/lang/System/out Ljava/io/PrintStream;
+ldc "Your number doubled and added 5 is:"
+invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+
+getstatic java/lang/System/out Ljava/io/PrintStream;
+iload 0
+invokevirtual java/io/PrintStream/println(I)V
+
+iload 0
+ldc 15
     if_icmpge NOT_IF_1 ; 
 getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "Its lesser than four"
+ldc "Its lesser than 15"
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 
 goto END_IF_ELSE_1 ; 
 NOT_IF_1: 
 getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "Its greater than four"
+ldc "Its greater than 15"
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 
 END_IF_ELSE_1: 
@@ -75,23 +91,23 @@ dup
 getstatic java/lang/System/in Ljava/io/InputStream;
 invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V
 invokevirtual java/util/Scanner/nextInt()I
-istore 2
+istore 1
 ldc 0
-istore 3
+istore 2
 START_WHILE_2: 
-iload 3
 iload 2
+iload 1
     if_icmpge END_WHILE_2 ; 
 getstatic java/lang/System/out Ljava/io/PrintStream;
 ldc "Loop number: "
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 
-iload 3
+iload 2
 ldc 1
 iadd
-istore 3
+istore 2
 getstatic java/lang/System/out Ljava/io/PrintStream;
-iload 3
+iload 2
 invokevirtual java/io/PrintStream/println(I)V
 
 goto START_WHILE_2 ; 

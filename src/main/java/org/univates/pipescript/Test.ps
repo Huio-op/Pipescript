@@ -2,16 +2,24 @@ fun sum|int i1, int i2 |int {
     >> i1 + i2;
 }
 
+fun mul|int i1, int i2 |int {
+    >> i1 * i2;
+}
+
 fun main| {
     text | "Input a number:";
     int numIn << textInInt |;
-    text | "Adding one to the number";
-    int testSum << sum | numIn, 1;
 
-    if | testSum lt 4 {
-        text | "Its lesser than four";
+    numIn << sum |  mul | numIn, 2;, 5;
+
+    text | "Your number doubled and added 5 is:";
+    text | numIn;
+
+
+    if | numIn lt 15 {
+        text | "Its lesser than 15";
     } else {
-        text | "Its greater than four";
+        text | "Its greater than 15";
     }
 
     text | "Input a string:";
@@ -27,5 +35,4 @@ fun main| {
         counter << counter + 1;
         text | counter;
     }
-
 }
