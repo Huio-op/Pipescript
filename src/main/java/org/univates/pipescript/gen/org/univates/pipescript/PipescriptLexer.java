@@ -112,6 +112,21 @@ public class PipescriptLexer extends Lexer {
 	    Integer counter = 1;
 	    Integer ifCounter = 1;
 
+	    final Function<Var, String> loadVar = (Var var) -> {
+	        switch (var.type) {
+	            case "int":
+	            case "bool":
+	            case "char":
+	                return "iload " + var.stackPos;
+	            case "double":
+	                return "dload " + var.stackPos;
+	            case "str":
+	                return "aload " + var.stackPos;
+	            default:
+	                return "iload " + var.stackPos;
+	        }
+	    };
+
 	    public static class CustomFunction {
 	        public String name;
 	        public List<String> receivedTypes;
@@ -227,8 +242,8 @@ public class PipescriptLexer extends Lexer {
 		"\t\u0005\u000b\u0006\r\u0007\u000f\b\u0011\t\u0013\n\u0015\u000b\u0017"+
 		"\f\u0019\r\u001b\u000e\u001d\u000f\u001f\u0010!\u0011#\u0012%\u0013\'"+
 		"\u0014)\u0015+\u0016-\u0017/\u00181\u00193\u001a5\u001b7\u001c9\u001d"+
-		";\u001e=\u001f? A!C\"E#G$I%K&M\'\u0001\u0000\u0004\u0002\u0000AZaz\f\u0000"+
-		"  \'\',,CCFFNNUUeeppttyy||\u0001\u0000\"\"\u0003\u0000\t\t\r\r  \u00e8"+
+		";\u001e=\u001f? A!C\"E#G$I%K&M\'\u0001\u0000\u0004\u0002\u0000AZaz\r\u0000"+
+		"  \'\',,;;CCFFNNUUeeppttyy||\u0001\u0000\"\"\u0003\u0000\t\t\r\r  \u00e8"+
 		"\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0003\u0001\u0000\u0000\u0000"+
 		"\u0000\u0005\u0001\u0000\u0000\u0000\u0000\u0007\u0001\u0000\u0000\u0000"+
 		"\u0000\t\u0001\u0000\u0000\u0000\u0000\u000b\u0001\u0000\u0000\u0000\u0000"+

@@ -106,6 +106,16 @@ public interface PipescriptListener extends ParseTreeListener {
 	 */
 	void exitFunction_printString(PipescriptParser.Function_printStringContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PipescriptParser#function_printVar}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction_printVar(PipescriptParser.Function_printVarContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PipescriptParser#function_printVar}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction_printVar(PipescriptParser.Function_printVarContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PipescriptParser#function_customCall}.
 	 * @param ctx the parse tree
 	 */

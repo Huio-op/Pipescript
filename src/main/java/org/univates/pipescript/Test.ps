@@ -7,9 +7,10 @@ fun main| {
     int aaBa << 2;
     text | "hello world";
 
-    sum | aaBa, 2;
+    int testSum << sum | aaBa, 2;
+    text | testSum;
 
-    if | aaBa lt 4 {
+    if | testSum lt 4 {
        text | "Its lesser than four";
     }
 }

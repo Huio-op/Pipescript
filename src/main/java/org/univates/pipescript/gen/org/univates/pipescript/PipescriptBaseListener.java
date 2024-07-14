@@ -133,6 +133,18 @@ public class PipescriptBaseListener implements PipescriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterFunction_printVar(PipescriptParser.Function_printVarContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunction_printVar(PipescriptParser.Function_printVarContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterFunction_customCall(PipescriptParser.Function_customCallContext ctx) { }
 	/**
 	 * {@inheritDoc}

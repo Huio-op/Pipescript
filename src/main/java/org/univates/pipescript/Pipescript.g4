@@ -20,6 +20,21 @@ grammar Pipescript;
     Integer counter = 1;
     Integer ifCounter = 1;
 
+    final Function<Var, String> loadVar = (Var var) -> {
+        switch (var.type) {
+            case "int":
+            case "bool":
+            case "char":
+                return "iload " + var.stackPos;
+            case "double":
+                return "dload " + var.stackPos;
+            case "str":
+                return "aload " + var.stackPos;
+            default:
+                return "iload " + var.stackPos;
+        }
+    };
+
     public static class CustomFunction {
         public String name;
         public List<String> receivedTypes;
@@ -102,7 +117,7 @@ ELSE          : 'else' ;
 WHILE         : 'while' ;
 COMMA         : ',' ;
 SEMICOLON     : ';' ;
-VAR           : [a-zA-Z]+ ~[type | FUNC | ','] ;
+VAR           : [a-zA-Z]+ ~[type | FUNC | ',' | ';'] ;
 NUM           : '0'..'9'+ ;
 STRING        : '"' ~["]* '"' ;
 NL            : ('\r')? '\n' ;
@@ -336,6 +351,27 @@ function_printString
             { System.out.println("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V\n"); }
     ;
 
+function_printVar [String funcName]
+    :
+        PRINT PIPE
+          { System.out.println("getstatic java/lang/System/out Ljava/io/PrintStream;"); }
+        VAR
+            {
+                final String varName = $VAR.text;
+                final List<Var> memoryVars = memory.get(funcName);
+
+                final Var var = memoryVars.stream().filter(v -> v.name.equals(varName)).findFirst()
+                    .orElse(null);
+                if (var == null) {
+                    System.err.println("Unknown variable " + varName + " in function call text");
+                    throw new RuntimeException("Unknown variable " + varName + " in function call text");
+                }
+
+                System.out.println(loadVar.apply(var));
+                System.out.println("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V\n");
+            }
+    ;
+
 function_customCall [String funcName]
     :
         (funcCall = VAR) PIPE ((vars += VAR | expression[funcName]) (COMMA (vars += VAR | expression[funcName]))*)?
@@ -370,31 +406,17 @@ function_customCall [String funcName]
                 .reduce("", String::concat);
             final String returnType = getTypeString.apply(fun.returnType);
 
-            List<Var> memoryVars = memory.get(funcName);
+            final List<Var> memoryVars = memory.get(funcName);
             for (int i = 0; i < $vars.size(); i++) {
-                String varName = $vars.get(i).getText();
-                Var currentVar = memoryVars.stream().filter(mv -> mv.name.equals(varName)).findFirst()
+                final String varName = $vars.get(i).getText();
+                final Var currentVar = memoryVars.stream().filter(mv -> mv.name.equals(varName)).findFirst()
                     .orElse(null);
                 if (currentVar == null) {
                    System.err.println("Unknown variable " + varName + " in function call " + $funcCall.text);
                    throw new RuntimeException("Unknown variable " + varName + " in function call " + $funcCall.text);
                 }
-                switch (currentVar.type) {
-                    case "int":
-                    case "bool":
-                    case "char":
-                        System.out.println("iload " + currentVar.stackPos);
-                        break;
-                    case "double":
-                        System.out.println("dload " + currentVar.stackPos);
-                        break;
-                    case "str":
-                        System.out.println("aload " + currentVar.stackPos);
-                        break;
-                    default:
-                        System.out.println("iload " + currentVar.stackPos);
-                        break;
-                }
+
+                System.out.println(loadVar.apply(currentVar));
             }
 
             System.out.println("invokestatic Output/"+ fun.name +"("+ receivedTypes +")"+ returnType +"\n");
@@ -405,13 +427,15 @@ call_function [String funcName]
     :
         (function_printInteger[funcName] |
         function_printString |
+        function_printVar[funcName] |
         function_customCall[funcName])
         SEMICOLON
     ;
 
 assignment [String funcName]
     :
-        (op = INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR) VAR ATTRIB ( exp = expression[funcName] )
+        (op = INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR) VAR
+        ATTRIB ( exp = expression[funcName] | function_customCall[funcName] )
     	{
     	    List<Var> vars = memory.get(funcName);
             if (vars == null) {

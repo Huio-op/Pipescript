@@ -33,6 +33,11 @@ ldc 2
 iload 0
 invokestatic Output/sum(II)I
 
+istore 0
+getstatic java/lang/System/out Ljava/io/PrintStream;
+iload 0
+invokevirtual java/io/PrintStream/println(I)V
+
 iload 0
 ldc 4
     if_icmpge NOT_IF_1 ; 
