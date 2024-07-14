@@ -112,6 +112,7 @@ GREATER_EQUAL : 'gte' ;
 FUNC          : 'fun' ;
 MAIN          : 'main' ;
 PRINT         : 'text' ;
+SCANNER       : 'textIn';
 IF            : 'if' ;
 ELSE          : 'else' ;
 WHILE         : 'while' ;
@@ -192,7 +193,7 @@ function
                     final Var var = new Var(name, type, count);
                     receivedVars.add(var);
 
-                    stackTypes.put(type, count++);
+                    stackTypes.put(type, ++count);
                     stackCounter.put($name.text, stackTypes);
                 }
                 if (memory.containsKey($name.text)) {
@@ -372,6 +373,23 @@ function_printVar [String funcName]
             }
     ;
 
+function_scanInteger [String funcName]
+    :
+        SCANNER PIPE
+        {
+            System.out.println("new java/util/Scanner");
+            System.out.println("dup");
+            System.out.println("getstatic java/lang/System/in Ljava/io/InputStream;");
+            System.out.println("invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V");
+            System.out.println("invokevirtual java/util/Scanner/nextInt()I");
+        }
+    ;
+
+function_scanString [String funcName]
+    :
+        SCANNER PIPE STRING
+    ;
+
 function_customCall [String funcName]
     :
         (funcCall = VAR) PIPE ((vars += VAR | expression[funcName]) (COMMA (vars += VAR | expression[funcName]))*)?
@@ -428,6 +446,8 @@ call_function [String funcName]
         (function_printInteger[funcName] |
         function_printString |
         function_printVar[funcName] |
+        function_scanInteger[funcName] |
+        function_scanString[funcName] |
         function_customCall[funcName])
         SEMICOLON
     ;
@@ -435,7 +455,7 @@ call_function [String funcName]
 assignment [String funcName]
     :
         (op = INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR) VAR
-        ATTRIB ( exp = expression[funcName] | function_customCall[funcName] )
+        ATTRIB ( exp = expression[funcName] | function_customCall[funcName] | function_scanInteger[funcName] | function_scanString[funcName] )
     	{
     	    List<Var> vars = memory.get(funcName);
             if (vars == null) {

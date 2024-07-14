@@ -79,6 +79,18 @@ public interface PipescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunction_printVar(PipescriptParser.Function_printVarContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PipescriptParser#function_scanInteger}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction_scanInteger(PipescriptParser.Function_scanIntegerContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PipescriptParser#function_scanString}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction_scanString(PipescriptParser.Function_scanStringContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PipescriptParser#function_customCall}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
