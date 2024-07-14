@@ -35,6 +35,21 @@ grammar Pipescript;
         }
     };
 
+    final Function<Var, String> storeVar = (Var var) -> {
+        switch (var.type) {
+            case "int":
+            case "bool":
+            case "char":
+                return "istore " + var.stackPos;
+            case "double":
+                return "dstore " + var.stackPos;
+            case "str":
+                return "astore " + var.stackPos;
+            default:
+                return "istore " + var.stackPos;
+        }
+    };
+
     final Function<String, String> getTypeString = (String type) -> {
         return switch(type) {
             case "int":
@@ -466,7 +481,7 @@ call_function [String funcName]
 
 assignment [String funcName]
     :
-        (op = (INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR)) VAR
+        (op = (INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR))? VAR
         ATTRIB ( exp = expression[funcName] | function_customCall[funcName] | function_scanInteger[funcName] | function_scanString[funcName] )
     	{
     	    List<Var> vars = memory.get(funcName);
@@ -481,7 +496,7 @@ assignment [String funcName]
                     stackCount = 0;
                 }
     	        Var newVar = new Var($VAR.text, $op.text, stackCount);
-    	        stackTypes.put($op.text, stackCount++);
+    	        stackTypes.put($op.text, ++stackCount);
     	        stackCounter.put(funcName, stackTypes);
                 vars.add(newVar);
                 memory.put(funcName, vars);
@@ -490,22 +505,26 @@ assignment [String funcName]
     	    final Var currentVar = memory.get(funcName)
     	        .stream().filter(var -> var.name.equals($VAR.text)).findFirst().get();
 
-    	    switch($op.type) {
-    	        case INT_VAR:
-    	        case CHAR_VAR:
-    	            System.out.println("istore " + currentVar.stackPos);
-                    break;
-                case BOOL_VAR:
-    	            System.out.println("bstore " + currentVar.stackPos);
-                    break;
-                case DOUBLE_VAR:
-    	            System.out.println("dstore " + currentVar.stackPos);
-                    break;
-                case STRING_VAR:
-                    System.out.println("astore " + currentVar.stackPos);
-                    break;
-                default:
-                    System.err.println("undefined variable " + $VAR.text);
+            if ($op.type == 0) {
+                System.out.println(storeVar.apply(currentVar));
+            } else {
+                switch($op.type) {
+                    case INT_VAR:
+                    case CHAR_VAR:
+                        System.out.println("istore " + currentVar.stackPos);
+                        break;
+                    case BOOL_VAR:
+                        System.out.println("bstore " + currentVar.stackPos);
+                        break;
+                    case DOUBLE_VAR:
+                        System.out.println("dstore " + currentVar.stackPos);
+                        break;
+                    case STRING_VAR:
+                        System.out.println("astore " + currentVar.stackPos);
+                        break;
+                    default:
+                        System.err.println("undefined variable " + $VAR.text);
+                }
             }
         } SEMICOLON
     ;

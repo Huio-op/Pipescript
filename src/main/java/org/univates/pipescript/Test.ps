@@ -1,12 +1,31 @@
+fun sum|int i1, int i2 |int {
+    >> i1 + i2;
+}
+
 fun main| {
+    text | "Input a number:";
+    int numIn << textInInt |;
+    text | "Adding one to the number";
+    int testSum << sum | numIn, 1;
+
+    if | testSum lt 4 {
+        text | "Its lesser than four";
+    } else {
+        text | "Its greater than four";
+    }
 
     text | "Input a string:";
     str string << textInStr |;
     text | string;
 
-    text | 1 + 2 + 3;
+    text | "Input the number of loops:";
+    int loopsNum << textInInt |;
+    int counter << 0;
 
-    int integer << textInInt |;
-    text | integer;
+    while | counter lt loopsNum {
+        text | "Loop number: ";
+        counter << counter + 1;
+        text | counter;
+    }
 
 }

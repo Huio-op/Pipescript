@@ -127,6 +127,21 @@ public class PipescriptLexer extends Lexer {
 	        }
 	    };
 
+	    final Function<Var, String> storeVar = (Var var) -> {
+	        switch (var.type) {
+	            case "int":
+	            case "bool":
+	            case "char":
+	                return "istore " + var.stackPos;
+	            case "double":
+	                return "dstore " + var.stackPos;
+	            case "str":
+	                return "astore " + var.stackPos;
+	            default:
+	                return "istore " + var.stackPos;
+	        }
+	    };
+
 	    final Function<String, String> getTypeString = (String type) -> {
 	        return switch(type) {
 	            case "int":
