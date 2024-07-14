@@ -7,6 +7,10 @@ fun mul|int i1, int i2 |int {
 }
 
 fun main| {
+
+    str vr << read | "file.txt";
+    text | vr;
+
     text | "Input a number:";
     int numIn << textInInt |;
 

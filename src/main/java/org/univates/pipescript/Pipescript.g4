@@ -158,9 +158,10 @@ CHAR_VAR      : 'char' ;
 BOOL_VAR      : 'bool' ;
 VOID_VAR      : 'void' ;
 NULL_VAR      : 'null' ;
-NUM           : '0'..'9'+ ;
-VAR           : [a-zA-Z]+ ~[type | FUNC | ',' | ';'] ;
-STRING        : '"' ~["]* '"' ;
+READ          : 'read';
+NUM           : [0-9]+;
+VAR           : [a-zA-Z_][a-zA-Z0-9_]*;
+STRING        : '"' ( ~["\\] | '\\' . )* '"';
 NL            : ('\r')? '\n' ;
 WS            : [ \t\r]+ -> skip ; // skip spaces and tabs
 
@@ -292,6 +293,7 @@ statement [String funcName]
         statement_while[funcName]   |
         assignment[funcName]
     ;
+
 
 statement_if [String funcName]
     :
@@ -433,6 +435,23 @@ function_scanString [String funcName]
         }
     ;
 
+function_readFile [String funcName]
+    :
+        READ PIPE STRING
+        {
+            // Code to generate bytecode for reading a file
+            String fileName = $STRING.text.replaceAll("^\"|\"$", "");
+            emit("new java/io/BufferedReader");
+            emit("dup");
+            emit("new java/io/FileReader");
+            emit("dup");
+            emit("ldc \"" + fileName + "\"");
+            emit("invokespecial java/io/FileReader/<init>(Ljava/lang/String;)V");
+            emit("invokespecial java/io/BufferedReader/<init>(Ljava/io/Reader;)V");
+            emit("invokevirtual java/io/BufferedReader/readLine()Ljava/lang/String;");
+        }
+    ;
+
 function_customCall [String funcName]
     :
         (funcCall = VAR) PIPE ((factor[funcName] | expression[funcName] | (function_customCall[funcName] SEMICOLON))
@@ -463,6 +482,7 @@ call_function [String funcName]
         function_printVar[funcName] |
         function_scanInteger[funcName] |
         function_scanString[funcName] |
+        function_readFile[funcName] |
         function_customCall[funcName])
         SEMICOLON
     ;
@@ -470,7 +490,7 @@ call_function [String funcName]
 assignment [String funcName]
     :
         (op = (INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR))? VAR
-        ATTRIB ( exp = expression[funcName] | function_customCall[funcName] | function_scanInteger[funcName] | function_scanString[funcName] )
+        ATTRIB ( exp = expression[funcName] | function_customCall[funcName] | function_scanInteger[funcName] | function_scanString[funcName] | function_readFile[funcName] | STRING )
     	{
     	    List<Var> vars = memory.get(funcName);
             if (vars == null) {
@@ -495,6 +515,9 @@ assignment [String funcName]
 
             if ($op.type == 0) {
                 System.out.println(storeVar.apply(currentVar));
+            } else if ($STRING != null) {
+                System.out.println("ldc " + $STRING.text);
+                System.out.println("astore " + currentVar.stackPos);
             } else {
                 switch($op.type) {
                     case INT_VAR:
