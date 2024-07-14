@@ -5,6 +5,8 @@ package org.univates.pipescript;
     import java.util.LinkedHashMap;
     import java.util.List;
     import java.util.function.Function;
+    import java.util.Optional;
+    import java.util.ArrayList;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -126,6 +128,18 @@ public class PipescriptBaseListener implements PipescriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFunction_printString(PipescriptParser.Function_printStringContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunction_customCall(PipescriptParser.Function_customCallContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunction_customCall(PipescriptParser.Function_customCallContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

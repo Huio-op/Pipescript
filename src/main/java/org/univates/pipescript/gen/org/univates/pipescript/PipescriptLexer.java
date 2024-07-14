@@ -5,6 +5,8 @@ package org.univates.pipescript;
     import java.util.LinkedHashMap;
     import java.util.List;
     import java.util.function.Function;
+    import java.util.Optional;
+    import java.util.ArrayList;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -106,8 +108,21 @@ public class PipescriptLexer extends Lexer {
 
 	    Map<String, List<Var>> memory = new LinkedHashMap<String, List<Var>>();
 	    Map<String, Map<String, Integer>> stackCounter = new LinkedHashMap<String, Map<String, Integer>>();
+	    List<CustomFunction> functions = new ArrayList();
 	    Integer counter = 1;
 	    Integer ifCounter = 1;
+
+	    public static class CustomFunction {
+	        public String name;
+	        public List<String> receivedTypes;
+	        public String returnType;
+
+	        public CustomFunction (String name, List<String> receivedTypes, String returnType) {
+	            this.name = name;
+	            this.receivedTypes = receivedTypes;
+	            this.returnType = returnType;
+	        }
+	    }
 
 	    public static class Var {
 	        public String name;
@@ -212,12 +227,12 @@ public class PipescriptLexer extends Lexer {
 		"\t\u0005\u000b\u0006\r\u0007\u000f\b\u0011\t\u0013\n\u0015\u000b\u0017"+
 		"\f\u0019\r\u001b\u000e\u001d\u000f\u001f\u0010!\u0011#\u0012%\u0013\'"+
 		"\u0014)\u0015+\u0016-\u0017/\u00181\u00193\u001a5\u001b7\u001c9\u001d"+
-		";\u001e=\u001f? A!C\"E#G$I%K&M\'\u0001\u0000\u0004\u0002\u0000AZaz\n\u0000"+
-		"  CCFFNNUUeeppttyy||\u0001\u0000\"\"\u0003\u0000\t\t\r\r  \u00e8\u0000"+
-		"\u0001\u0001\u0000\u0000\u0000\u0000\u0003\u0001\u0000\u0000\u0000\u0000"+
-		"\u0005\u0001\u0000\u0000\u0000\u0000\u0007\u0001\u0000\u0000\u0000\u0000"+
-		"\t\u0001\u0000\u0000\u0000\u0000\u000b\u0001\u0000\u0000\u0000\u0000\r"+
-		"\u0001\u0000\u0000\u0000\u0000\u000f\u0001\u0000\u0000\u0000\u0000\u0011"+
+		";\u001e=\u001f? A!C\"E#G$I%K&M\'\u0001\u0000\u0004\u0002\u0000AZaz\f\u0000"+
+		"  \'\',,CCFFNNUUeeppttyy||\u0001\u0000\"\"\u0003\u0000\t\t\r\r  \u00e8"+
+		"\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0003\u0001\u0000\u0000\u0000"+
+		"\u0000\u0005\u0001\u0000\u0000\u0000\u0000\u0007\u0001\u0000\u0000\u0000"+
+		"\u0000\t\u0001\u0000\u0000\u0000\u0000\u000b\u0001\u0000\u0000\u0000\u0000"+
+		"\r\u0001\u0000\u0000\u0000\u0000\u000f\u0001\u0000\u0000\u0000\u0000\u0011"+
 		"\u0001\u0000\u0000\u0000\u0000\u0013\u0001\u0000\u0000\u0000\u0000\u0015"+
 		"\u0001\u0000\u0000\u0000\u0000\u0017\u0001\u0000\u0000\u0000\u0000\u0019"+
 		"\u0001\u0000\u0000\u0000\u0000\u001b\u0001\u0000\u0000\u0000\u0000\u001d"+

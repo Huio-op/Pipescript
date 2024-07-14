@@ -5,6 +5,8 @@ package org.univates.pipescript;
     import java.util.LinkedHashMap;
     import java.util.List;
     import java.util.function.Function;
+    import java.util.Optional;
+    import java.util.ArrayList;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -81,6 +83,13 @@ public class PipescriptBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitFunction_printString(PipescriptParser.Function_printStringContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitFunction_customCall(PipescriptParser.Function_customCallContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -8,14 +8,29 @@ grammar Pipescript;
     import java.util.LinkedHashMap;
     import java.util.List;
     import java.util.function.Function;
+    import java.util.Optional;
+    import java.util.ArrayList;
 }
 
 @members
 {
     Map<String, List<Var>> memory = new LinkedHashMap<String, List<Var>>();
     Map<String, Map<String, Integer>> stackCounter = new LinkedHashMap<String, Map<String, Integer>>();
+    List<CustomFunction> functions = new ArrayList();
     Integer counter = 1;
     Integer ifCounter = 1;
+
+    public static class CustomFunction {
+        public String name;
+        public List<String> receivedTypes;
+        public String returnType;
+
+        public CustomFunction (String name, List<String> receivedTypes, String returnType) {
+            this.name = name;
+            this.receivedTypes = receivedTypes;
+            this.returnType = returnType;
+        }
+    }
 
     public static class Var {
         public String name;
@@ -87,7 +102,7 @@ ELSE          : 'else' ;
 WHILE         : 'while' ;
 COMMA         : ',' ;
 SEMICOLON     : ';' ;
-VAR           : [a-zA-Z]+ ~[type | FUNC] ;
+VAR           : [a-zA-Z]+ ~[type | FUNC | ','] ;
 NUM           : '0'..'9'+ ;
 STRING        : '"' ~["]* '"' ;
 NL            : ('\r')? '\n' ;
@@ -103,7 +118,18 @@ NULL_VAR      : 'null' ;
 /*---------------- PARSER RULES ----------------*/
 
 program
-    :  main (NL)* (function)*
+    :
+        {
+            System.out.println(".source Output.j");
+            System.out.println(".class  public Output");
+            System.out.println(".super  java/lang/Object\n");
+            System.out.println(".method public <init>()V");
+            System.out.println("aload_0");
+            System.out.println("invokenonvirtual java/lang/Object/<init>()V");
+            System.out.println("return");
+            System.out.println(".end method\n");
+        }
+        (function)* (NL)* main
     ;
 
 main
@@ -112,14 +138,6 @@ main
             {
                 if (!stackCounter.containsKey("main")) stackCounter.put("main", new LinkedHashMap<String, Integer>());
 
-                System.out.println(".source Output.j");
-                System.out.println(".class  public Output");
-                System.out.println(".super  java/lang/Object\n");
-                System.out.println(".method public <init>()V");
-                System.out.println("aload_0");
-                System.out.println("invokenonvirtual java/lang/Object/<init>()V");
-                System.out.println("return");
-                System.out.println(".end method\n");
                 System.out.println(".method public static main([Ljava/lang/String;)V\n");
             }
         (statement["main"]) * CLOSE_C NL
@@ -167,6 +185,7 @@ function
                 }
 
                 memory.put($name.text, receivedVars);
+                functions.add(new CustomFunction($name.text, $types.stream().map(t -> t.getText()).toList(), $ret.text));
 
                 String returnType = switch($ret.type) {
                     case INT_VAR:
@@ -199,7 +218,9 @@ function
                             yield "V";
                     };
                 };
-                String receivedTypes = receivedVars.stream().map(v -> getTypeString.apply(v.type)).reduce("", String::concat);
+                String receivedTypes = receivedVars.stream()
+                    .map(v -> getTypeString.apply(v.type))
+                    .reduce("", String::concat);
 
                 System.out.println(".method public static "+ $name.text +"("+ receivedTypes +")"+ returnType +"\n");
             }
@@ -315,10 +336,76 @@ function_printString
             { System.out.println("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V\n"); }
     ;
 
+function_customCall [String funcName]
+    :
+        (funcCall = VAR) PIPE ((vars += VAR | expression[funcName]) (COMMA (vars += VAR | expression[funcName]))*)?
+        {
+
+            final Optional<CustomFunction> optFun = functions.stream().filter(f -> f.name.equals($funcCall.text)).findFirst();
+            if (!optFun.isPresent()) {
+               System.err.println("Undefined function " + $funcCall.text);
+               throw new RuntimeException("Undefined function " + $funcCall.text);
+            }
+
+            final CustomFunction fun = optFun.get();
+
+            final Function<String, String> getTypeString = (String type) -> {
+                return switch(type) {
+                    case "int":
+                        yield "I";
+                    case "bool":
+                        yield "B";
+                    case "char":
+                        yield "C";
+                    case "double":
+                        yield "F";
+                    case "str":
+                        yield "Ljava/lang/String;";
+                    default:
+                        yield "V";
+                };
+            };
+            final String receivedTypes = fun.receivedTypes.stream()
+                .map(v -> getTypeString.apply(v))
+                .reduce("", String::concat);
+            final String returnType = getTypeString.apply(fun.returnType);
+
+            List<Var> memoryVars = memory.get(funcName);
+            for (int i = 0; i < $vars.size(); i++) {
+                String varName = $vars.get(i).getText();
+                Var currentVar = memoryVars.stream().filter(mv -> mv.name.equals(varName)).findFirst()
+                    .orElse(null);
+                if (currentVar == null) {
+                   System.err.println("Unknown variable " + varName + " in function call " + $funcCall.text);
+                   throw new RuntimeException("Unknown variable " + varName + " in function call " + $funcCall.text);
+                }
+                switch (currentVar.type) {
+                    case "int":
+                    case "bool":
+                    case "char":
+                        System.out.println("iload " + currentVar.stackPos);
+                        break;
+                    case "double":
+                        System.out.println("dload " + currentVar.stackPos);
+                        break;
+                    case "str":
+                        System.out.println("aload " + currentVar.stackPos);
+                        break;
+                    default:
+                        System.out.println("iload " + currentVar.stackPos);
+                        break;
+                }
+            }
+
+            System.out.println("invokestatic Output/"+ fun.name +"("+ receivedTypes +")"+ returnType +"\n");
+        }
+    ;
+
 call_function [String funcName]
     :
         (function_printInteger[funcName] |
-        function_printString)
+        function_printString |
+        function_customCall[funcName])
         SEMICOLON
     ;
 
