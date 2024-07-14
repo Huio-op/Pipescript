@@ -145,7 +145,7 @@ FUNC          : 'fun' ;
 MAIN          : 'main' ;
 PRINT         : 'text' ;
 INT_SCANNER   : 'textInInt';
-STR_SCANNER  : 'textInStr';
+STR_SCANNER   : 'textInStr';
 IF            : 'if' ;
 ELSE          : 'else' ;
 WHILE         : 'while' ;
