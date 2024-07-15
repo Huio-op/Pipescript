@@ -160,6 +160,7 @@ VOID_VAR      : 'void' ;
 NULL_VAR      : 'null' ;
 READ          : 'read';
 NUM           : [0-9]+;
+COMMENT       : '#' .*? '\n' -> channel(HIDDEN);
 VAR           : [a-zA-Z_][a-zA-Z0-9_]*;
 STRING        : '"' ( ~["\\] | '\\' . )* '"';
 NL            : ('\r')? '\n' ;
@@ -179,7 +180,7 @@ program
             System.out.println("return");
             System.out.println(".end method\n");
         }
-        (function (NL)*)*  main
+        (NL)* (function (NL)*)*  main (NL)*
     ;
 
 main
@@ -190,7 +191,7 @@ main
 
                 System.out.println(".method public static main([Ljava/lang/String;)V\n");
             }
-        (statement["main"]) * CLOSE_C NL
+        (statement["main"]) * CLOSE_C (NL)*
             {
                 System.out.println("return");
                 System.out.println(".limit stack 50");
@@ -259,8 +260,8 @@ function
                 System.out.println(".method public static "+ $name.text +"("+ receivedTypes +")"+ returnType +"\n");
             }
         (statement[$name.text]) *
-        RETURN expression[$name.text] SEMICOLON NL
-        CLOSE_C NL
+        RETURN expression[$name.text] SEMICOLON (NL)*
+        CLOSE_C (NL)*
             {
                 switch($ret.type) {
                     case INT_VAR:

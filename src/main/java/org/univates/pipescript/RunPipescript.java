@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.function.Supplier;
 
 import static org.antlr.v4.runtime.CharStreams.fromFileName;

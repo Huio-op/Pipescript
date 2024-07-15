@@ -110,6 +110,13 @@ public class PipescriptBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitFunction_readFile(PipescriptParser.Function_readFileContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitFunction_customCall(PipescriptParser.Function_customCallContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
