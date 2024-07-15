@@ -161,6 +161,8 @@ NULL_VAR      : 'null' ;
 READ          : 'read';
 NUM           : [0-9]+;
 COMMENT       : '#' .*? '\n' -> channel(HIDDEN);
+BREAK         : 'break';
+TRUE          : 'true';
 VAR           : [a-zA-Z_][a-zA-Z0-9_]*;
 STRING        : '"' ( ~["\\] | '\\' . )* '"';
 NL            : ('\r')? '\n' ;
@@ -191,7 +193,7 @@ main
 
                 System.out.println(".method public static main([Ljava/lang/String;)V\n");
             }
-        (statement["main"]) * CLOSE_C (NL)*
+        (statement["main", null]) * CLOSE_C (NL)*
             {
                 System.out.println("return");
                 System.out.println(".limit stack 50");
@@ -259,7 +261,7 @@ function
 
                 System.out.println(".method public static "+ $name.text +"("+ receivedTypes +")"+ returnType +"\n");
             }
-        (statement[$name.text]) *
+        (statement[$name.text, null]) *
         RETURN expression[$name.text] SEMICOLON (NL)*
         CLOSE_C (NL)*
             {
@@ -285,18 +287,20 @@ function
             }
     ;
 
-statement [String funcName]
+statement [String funcName, Integer tempWhile]
     :
-        NL                          |
-        call_function[funcName]     |
-        statement_if[funcName]      |
-        statement_else[funcName]    |
-        statement_while[funcName]   |
-        assignment[funcName]
+        NL                                          |
+        call_function[funcName, tempWhile]          |
+        statement_if[funcName, tempWhile]           |
+        statement_else[funcName, tempWhile]         |
+        statement_while[funcName]                   |
+        statement_while_true[funcName]              |
+        break[tempWhile]                            |
+        assignment[funcName, tempWhile]
     ;
 
 
-statement_if [String funcName]
+statement_if [String funcName, Integer tempWhile]
     :
         { Integer tempIf = ifCounter++; }
         IF PIPE expression[funcName] op = ( EQUAL | DIFFER | LESSER | LESSER_EQUAL | GREATER | GREATER_EQUAL ) expression[funcName]
@@ -309,11 +313,11 @@ statement_if [String funcName]
                      ($op.type == GREATER)       ? "    if_icmple NOT_IF_" + tempIf + " ; " :
                      ($op.type == GREATER_EQUAL) ? "    if_icmplt NOT_IF_" + tempIf + " ; " : "");            }
 
-        OPEN_C NL (statement[funcName])* CLOSE_C NL
+        OPEN_C NL (statement[funcName, tempWhile])* CLOSE_C NL
             { emit("NOT_IF_" + tempIf + ": "); }
     ;
 
-statement_else [String funcName]
+statement_else [String funcName, Integer tempWhile]
     :
         { Integer tempIfElse = ifCounter++; }
         IF PIPE expression[funcName] op = ( EQUAL | DIFFER | LESSER | LESSER_EQUAL | GREATER | GREATER_EQUAL ) expression[funcName]
@@ -324,13 +328,13 @@ statement_else [String funcName]
                      ($op.type == GREATER)       ? "    if_icmple NOT_IF_" + tempIfElse + " ; " :
                      ($op.type == GREATER_EQUAL) ? "    if_icmplt NOT_IF_" + tempIfElse + " ; " : ""); }
 
-        OPEN_C NL (statement[funcName]) *
+        OPEN_C NL (statement[funcName, tempWhile]) *
             { emit("goto END_IF_ELSE_" + tempIfElse + " ; "); }
 
         CLOSE_C ELSE OPEN_C NL
             { emit("NOT_IF_" + tempIfElse + ": "); }
 
-        (statement[funcName]) * CLOSE_C NL
+        (statement[funcName, tempWhile]) * CLOSE_C NL
             { emit("END_IF_ELSE_" + tempIfElse + ": "); }
     ;
 
@@ -347,11 +351,34 @@ statement_while [String funcName]
                      ($op.type == GREATER)       ? "    if_icmple END_WHILE_" + tempWhile + " ; " :
                      ($op.type == GREATER_EQUAL) ? "    if_icmplt END_WHILE_" + tempWhile + " ; " : ""); }
 
-        OPEN_C NL (statement[funcName])*
+        OPEN_C NL (statement[funcName, tempWhile])*
             { emit("goto START_WHILE_" + tempWhile + " ; "); }
 
         CLOSE_C NL
             { emit("END_WHILE_" + tempWhile + ": "); }
+    ;
+
+statement_while_true [String funcName]
+    :
+        { Integer tempWhile = ifCounter++;
+          emit("START_WHILE_" + tempWhile + ": ");
+        }
+        WHILE PIPE TRUE
+
+        OPEN_C NL
+        (statement[funcName, tempWhile])*
+        (break[tempWhile])?
+        (statement[funcName, tempWhile])*
+            { emit("goto START_WHILE_" + tempWhile + " ; "); }
+
+        CLOSE_C NL
+            { emit("END_WHILE_" + tempWhile + ": "); }
+    ;
+
+break   [Integer tempWhile]
+    :
+        BREAK SEMICOLON
+        { emit("goto END_WHILE_" + tempWhile + " ; "); }
     ;
 
 function_printInteger [String funcName]
@@ -476,7 +503,7 @@ function_customCall [String funcName]
         }
     ;
 
-call_function [String funcName]
+call_function [String funcName, Integer tempWhile]
     :
         (function_printInteger[funcName] |
         function_printString |
@@ -488,7 +515,7 @@ call_function [String funcName]
         SEMICOLON
     ;
 
-assignment [String funcName]
+assignment [String funcName, Integer tempWhile]
     :
         (op = (INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR))? VAR
         ATTRIB ( exp = expression[funcName] | function_customCall[funcName] | function_scanInteger[funcName] | function_scanString[funcName] | function_readFile[funcName] | STRING )
