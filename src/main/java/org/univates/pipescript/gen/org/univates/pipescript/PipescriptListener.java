@@ -86,6 +86,26 @@ public interface PipescriptListener extends ParseTreeListener {
 	 */
 	void exitStatement_while(PipescriptParser.Statement_whileContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PipescriptParser#statement_while_true}.
+	 * @param ctx the parse tree
+	 */
+	void enterStatement_while_true(PipescriptParser.Statement_while_trueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PipescriptParser#statement_while_true}.
+	 * @param ctx the parse tree
+	 */
+	void exitStatement_while_true(PipescriptParser.Statement_while_trueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PipescriptParser#break}.
+	 * @param ctx the parse tree
+	 */
+	void enterBreak(PipescriptParser.BreakContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PipescriptParser#break}.
+	 * @param ctx the parse tree
+	 */
+	void exitBreak(PipescriptParser.BreakContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PipescriptParser#function_printInteger}.
 	 * @param ctx the parse tree
 	 */
@@ -146,6 +166,16 @@ public interface PipescriptListener extends ParseTreeListener {
 	 */
 	void exitFunction_readFile(PipescriptParser.Function_readFileContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PipescriptParser#function_writeFile}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction_writeFile(PipescriptParser.Function_writeFileContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PipescriptParser#function_writeFile}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction_writeFile(PipescriptParser.Function_writeFileContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PipescriptParser#function_customCall}.
 	 * @param ctx the parse tree
 	 */
@@ -155,6 +185,26 @@ public interface PipescriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunction_customCall(PipescriptParser.Function_customCallContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PipescriptParser#goto}.
+	 * @param ctx the parse tree
+	 */
+	void enterGoto(PipescriptParser.GotoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PipescriptParser#goto}.
+	 * @param ctx the parse tree
+	 */
+	void exitGoto(PipescriptParser.GotoContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PipescriptParser#def_goto}.
+	 * @param ctx the parse tree
+	 */
+	void enterDef_goto(PipescriptParser.Def_gotoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PipescriptParser#def_goto}.
+	 * @param ctx the parse tree
+	 */
+	void exitDef_goto(PipescriptParser.Def_gotoContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PipescriptParser#call_function}.
 	 * @param ctx the parse tree

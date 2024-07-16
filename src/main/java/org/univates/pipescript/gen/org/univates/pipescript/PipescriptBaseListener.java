@@ -109,6 +109,30 @@ public class PipescriptBaseListener implements PipescriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterStatement_while_true(PipescriptParser.Statement_while_trueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStatement_while_true(PipescriptParser.Statement_while_trueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBreak(PipescriptParser.BreakContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBreak(PipescriptParser.BreakContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterFunction_printInteger(PipescriptParser.Function_printIntegerContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -181,6 +205,18 @@ public class PipescriptBaseListener implements PipescriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterFunction_writeFile(PipescriptParser.Function_writeFileContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunction_writeFile(PipescriptParser.Function_writeFileContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterFunction_customCall(PipescriptParser.Function_customCallContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -188,6 +224,30 @@ public class PipescriptBaseListener implements PipescriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFunction_customCall(PipescriptParser.Function_customCallContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterGoto(PipescriptParser.GotoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitGoto(PipescriptParser.GotoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDef_goto(PipescriptParser.Def_gotoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDef_goto(PipescriptParser.Def_gotoContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -61,6 +61,18 @@ public interface PipescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStatement_while(PipescriptParser.Statement_whileContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PipescriptParser#statement_while_true}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatement_while_true(PipescriptParser.Statement_while_trueContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PipescriptParser#break}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBreak(PipescriptParser.BreakContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PipescriptParser#function_printInteger}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -97,11 +109,29 @@ public interface PipescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunction_readFile(PipescriptParser.Function_readFileContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PipescriptParser#function_writeFile}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction_writeFile(PipescriptParser.Function_writeFileContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PipescriptParser#function_customCall}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitFunction_customCall(PipescriptParser.Function_customCallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PipescriptParser#goto}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGoto(PipescriptParser.GotoContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PipescriptParser#def_goto}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDef_goto(PipescriptParser.Def_gotoContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PipescriptParser#call_function}.
 	 * @param ctx the parse tree

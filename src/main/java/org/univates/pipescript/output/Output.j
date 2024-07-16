@@ -28,19 +28,6 @@ ireturn
 .end method
 .method public static main([Ljava/lang/String;)V
 
-new java/io/BufferedReader
-dup
-new java/io/FileReader
-dup
-ldc "file.txt"
-invokespecial java/io/FileReader/<init>(Ljava/lang/String;)V
-invokespecial java/io/BufferedReader/<init>(Ljava/io/Reader;)V
-invokevirtual java/io/BufferedReader/readLine()Ljava/lang/String;
-astore 0
-getstatic java/lang/System/out Ljava/io/PrintStream;
-aload 0
-invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-
 getstatic java/lang/System/out Ljava/io/PrintStream;
 ldc "Input a number:"
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
@@ -90,9 +77,9 @@ dup
 getstatic java/lang/System/in Ljava/io/InputStream;
 invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V
 invokevirtual java/util/Scanner/next()Ljava/lang/String;
-astore 1
+astore 0
 getstatic java/lang/System/out Ljava/io/PrintStream;
-aload 1
+aload 0
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 
 getstatic java/lang/System/out Ljava/io/PrintStream;

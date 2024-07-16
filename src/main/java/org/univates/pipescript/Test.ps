@@ -1,12 +1,41 @@
+fun sum|int i1, int i2 |int {
+    >> i1 + i2;
+}
+
+fun mul|int i1, int i2 |int {
+    >> i1 * i2;
+}
+
+#Isso é um comentário
+
 fun main| {
+
+    text | "Input a number:";
+    int numIn << textInInt |;
+
+    numIn << sum |  mul | numIn, 2;, 5;
+
+    text | "Your number doubled and added 5 is:";
+    text | numIn;
+
+
+    if | numIn lt 15 {
+        text | "Its lesser than 15";
+    } else {
+        text | "Its greater than 15";
+    }
+
+    text | "Input a string:";
+    str string << textInStr |;
+    text | string;
+
+    text | "Input the number of loops:";
+    int loopsNum << textInInt |;
     int counter << 0;
 
-    while | true {
-        counter << counter + 1;
-        if | counter gt 100 {
-            break;
-        }
+    while | counter lt loopsNum {
         text | "Loop number: ";
+        counter << counter + 1;
         text | counter;
     }
 }
