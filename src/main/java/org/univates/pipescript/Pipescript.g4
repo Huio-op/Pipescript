@@ -162,6 +162,7 @@ NULL_VAR      : 'null' ;
 READ          : 'read';
 GOTO          : '@';
 DEF_GOTO      : 'def@';
+WRITE         : 'write';
 NUM           : [0-9]+;
 COMMENT       : '#' .*? '\n' -> channel(HIDDEN);
 BREAK         : 'break';
@@ -472,7 +473,6 @@ function_readFile [String funcName]
     :
         READ PIPE STRING
         {
-            // Code to generate bytecode for reading a file
             String fileName = $STRING.text.replaceAll("^\"|\"$", "");
             emit("new java/io/BufferedReader");
             emit("dup");
@@ -482,6 +482,47 @@ function_readFile [String funcName]
             emit("invokespecial java/io/FileReader/<init>(Ljava/lang/String;)V");
             emit("invokespecial java/io/BufferedReader/<init>(Ljava/io/Reader;)V");
             emit("invokevirtual java/io/BufferedReader/readLine()Ljava/lang/String;");
+        }
+    ;
+
+function_writeFile [String funcName]
+    :   WRITE PIPE STRING
+        {
+            String fileName = $STRING.text.replaceAll("^\"|\"$", "");
+            emit("new java/io/BufferedWriter");
+            emit("dup");
+            emit("new java/io/FileWriter");
+            emit("dup");
+            emit("ldc \"" + fileName + "\"");
+            emit("invokespecial java/io/FileWriter/<init>(Ljava/lang/String;)V");
+            emit("invokespecial java/io/BufferedWriter/<init>(Ljava/io/Writer;)V");
+            emit("dup");
+        }
+
+     COMMA (fac = factor[funcName] | str = STRING)
+        {
+            if ($str.text != null) {
+                String content = $str.text.replaceAll("^\"|\"$", "");
+                emit("ldc \"" + content + "\"");
+            }
+
+            if ($fac.text == null) {
+                emit("invokevirtual java/io/BufferedWriter/write(Ljava/lang/String;)V");
+            } else {
+                 Var var = memory.get(funcName)
+                                 .stream()
+                                 .filter(v -> v.name.equals($fac.text))
+                                 .findFirst()
+                                 .get();
+
+                 if (var.type.equals("int")) {
+                     emit("invokevirtual java/io/BufferedWriter/write(I)V");
+                 } else {
+                     emit("invokevirtual java/io/BufferedWriter/write(Ljava/lang/String;)V");
+                 }
+            }
+
+            emit("invokevirtual java/io/BufferedWriter/close()V");
         }
     ;
 
@@ -557,6 +598,7 @@ call_function [String funcName, Integer tempWhile]
         function_scanInteger[funcName] |
         function_scanString[funcName] |
         function_readFile[funcName] |
+        function_writeFile[funcName] |
         function_customCall[funcName])
         SEMICOLON
     ;
