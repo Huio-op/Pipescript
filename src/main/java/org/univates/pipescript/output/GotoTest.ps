@@ -1,0 +1,11 @@
+fun main| {
+    int counter << 0;
+
+    def@ fakeWhile;
+    counter << counter + 1;
+    text | "Loop number: ";
+    text | counter;
+    if | counter lt 100 {
+        @fakeWhile;
+    }
+}

@@ -17,6 +17,7 @@ grammar Pipescript;
     Map<String, List<Var>> memory = new LinkedHashMap<String, List<Var>>();
     Map<String, Map<String, Integer>> stackCounter = new LinkedHashMap<String, Map<String, Integer>>();
     List<CustomFunction> functions = new ArrayList();
+    Map<String, String> gotos = new LinkedHashMap<String, String>();
     Integer counter = 1;
     Integer ifCounter = 1;
 
@@ -159,6 +160,8 @@ BOOL_VAR      : 'bool' ;
 VOID_VAR      : 'void' ;
 NULL_VAR      : 'null' ;
 READ          : 'read';
+GOTO          : '@';
+DEF_GOTO      : 'def@';
 NUM           : [0-9]+;
 COMMENT       : '#' .*? '\n' -> channel(HIDDEN);
 BREAK         : 'break';
@@ -296,6 +299,8 @@ statement [String funcName, Integer tempWhile]
         statement_while[funcName]                   |
         statement_while_true[funcName]              |
         break[tempWhile]                            |
+        def_goto[funcName]                          |
+        goto[funcName]                              |
         assignment[funcName, tempWhile]
     ;
 
@@ -500,6 +505,47 @@ function_customCall [String funcName]
             final String returnType = getTypeString.apply(fun.returnType);
 
             System.out.println("invokestatic Output/"+ fun.name +"("+ receivedTypes +")"+ returnType +"\n");
+        }
+    ;
+
+goto [String funcName]
+    :
+        GOTO VAR SEMICOLON
+        {
+            final String gotoName = $VAR.text;
+            final String nameDef = gotos.get(gotoName);
+            if (nameDef == null || nameDef.isEmpty()) {
+                System.err.println("Undefined Goto pointer " + gotoName);
+                throw new RuntimeException("Undefined Goto pointer " + gotoName);
+            }
+
+            emit("goto " + nameDef + " ;");
+
+        }
+    ;
+
+def_goto [String funcName]
+    :
+        DEF_GOTO VAR SEMICOLON
+        {
+            final String gotoName = $VAR.text;
+            if (stackCounter.containsKey(gotoName)) {
+                System.err.println("Goto name already used in function " + gotoName);
+                throw new RuntimeException("Goto name already used in function " + gotoName);
+            }
+            if (memory.get(funcName).stream().anyMatch(v -> v.name.equals(gotoName))) {
+                System.err.println("Goto name already used in variable " + gotoName);
+                throw new RuntimeException("Goto name already used in variable " + gotoName);
+            }
+
+            if (gotos.get(gotoName) != null) {
+                System.err.println("Goto name already used in another goto " + gotoName);
+                throw new RuntimeException("Goto name already used in another goto " + gotoName);
+            }
+
+            final String nameDef = gotoName.toUpperCase() + "_DEF";
+            gotos.put(gotoName, nameDef);
+            emit(nameDef + ":");
         }
     ;
 
