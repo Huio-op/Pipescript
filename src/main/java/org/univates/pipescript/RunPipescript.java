@@ -37,10 +37,8 @@ public class RunPipescript {
       }
 
       executePipescriptProgram();
-    } catch (IOException e) {
+    } catch (IOException | InterruptedException e) {
       e.printStackTrace();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
     }
   }
 
