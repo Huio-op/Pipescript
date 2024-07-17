@@ -7,6 +7,7 @@ package org.univates.pipescript;
     import java.util.function.Function;
     import java.util.Optional;
     import java.util.ArrayList;
+    import java.util.Random;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -212,6 +213,18 @@ public class PipescriptBaseListener implements PipescriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFunction_writeFile(PipescriptParser.Function_writeFileContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunction_randomNum(PipescriptParser.Function_randomNumContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunction_randomNum(PipescriptParser.Function_randomNumContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

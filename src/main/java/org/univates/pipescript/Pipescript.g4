@@ -10,6 +10,7 @@ grammar Pipescript;
     import java.util.function.Function;
     import java.util.Optional;
     import java.util.ArrayList;
+    import java.util.Random;
 }
 
 @members
@@ -167,6 +168,7 @@ NUM           : [0-9]+;
 COMMENT       : '#' .*? '\n' -> channel(HIDDEN);
 BREAK         : 'break';
 TRUE          : 'true';
+RANDOM        : 'rand';
 VAR           : [a-zA-Z_][a-zA-Z0-9_]*;
 STRING        : '"' ( ~["\\] | '\\' . )* '"';
 NL            : ('\r')? '\n' ;
@@ -526,6 +528,29 @@ function_writeFile [String funcName]
         }
     ;
 
+function_randomNum [String funcName]
+    :
+        RANDOM PIPE (min = NUM) COMMA (max = NUM)
+        {
+            try {
+                final int min = Integer.parseInt($min.text);
+                final int max = Integer.parseInt($max.text);
+
+                emit("new java/util/Random");
+                emit("dup");
+                emit("invokespecial java/util/Random/<init>()V");
+                emit("ldc " + min);
+                emit("ldc " + (max + 1));
+                emit("invokevirtual java/util/Random.ints(II)Ljava/util/stream/IntStream;");
+                emit("invokeinterface java/util/stream/IntStream/findFirst()Ljava/util/OptionalInt; 1");
+                emit("invokevirtual java/util/OptionalInt/getAsInt()I");
+            } catch (Exception e) {
+               System.err.println("Inputs for function rand must be two integer values");
+               throw new RuntimeException("Inputs for function rand must be two integer values");
+            }
+        }
+    ;
+
 function_customCall [String funcName]
     :
         (funcCall = VAR) PIPE ((factor[funcName] | expression[funcName] | (function_customCall[funcName] SEMICOLON))
@@ -599,6 +624,7 @@ call_function [String funcName, Integer tempWhile]
         function_scanString[funcName] |
         function_readFile[funcName] |
         function_writeFile[funcName] |
+        function_randomNum[funcName] |
         function_customCall[funcName])
         SEMICOLON
     ;
@@ -606,7 +632,7 @@ call_function [String funcName, Integer tempWhile]
 assignment [String funcName, Integer tempWhile]
     :
         (op = (INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR | NULL_VAR))? VAR
-        ATTRIB ( exp = expression[funcName] | function_customCall[funcName] | function_scanInteger[funcName] | function_scanString[funcName] | function_readFile[funcName] | STRING )
+        ATTRIB ( exp = expression[funcName] | function_customCall[funcName] | function_scanInteger[funcName] | function_scanString[funcName] | function_readFile[funcName] | function_randomNum[funcName] |  STRING )
     	{
     	    List<Var> vars = memory.get(funcName);
             if (vars == null) {

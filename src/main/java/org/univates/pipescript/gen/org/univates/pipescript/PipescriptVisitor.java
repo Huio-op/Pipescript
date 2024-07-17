@@ -7,6 +7,7 @@ package org.univates.pipescript;
     import java.util.function.Function;
     import java.util.Optional;
     import java.util.ArrayList;
+    import java.util.Random;
 
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -114,6 +115,12 @@ public interface PipescriptVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFunction_writeFile(PipescriptParser.Function_writeFileContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PipescriptParser#function_randomNum}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction_randomNum(PipescriptParser.Function_randomNumContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PipescriptParser#function_customCall}.
 	 * @param ctx the parse tree

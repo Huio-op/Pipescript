@@ -7,6 +7,7 @@ package org.univates.pipescript;
     import java.util.function.Function;
     import java.util.Optional;
     import java.util.ArrayList;
+    import java.util.Random;
 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -175,6 +176,16 @@ public interface PipescriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunction_writeFile(PipescriptParser.Function_writeFileContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PipescriptParser#function_randomNum}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction_randomNum(PipescriptParser.Function_randomNumContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PipescriptParser#function_randomNum}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction_randomNum(PipescriptParser.Function_randomNumContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PipescriptParser#function_customCall}.
 	 * @param ctx the parse tree

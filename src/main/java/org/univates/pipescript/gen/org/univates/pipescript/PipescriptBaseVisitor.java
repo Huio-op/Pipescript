@@ -7,6 +7,7 @@ package org.univates.pipescript;
     import java.util.function.Function;
     import java.util.Optional;
     import java.util.ArrayList;
+    import java.util.Random;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -132,6 +133,13 @@ public class PipescriptBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitFunction_writeFile(PipescriptParser.Function_writeFileContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitFunction_randomNum(PipescriptParser.Function_randomNumContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
