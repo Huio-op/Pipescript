@@ -1,0 +1,28 @@
+fun askNumber| |int {
+    int number << textInInt |;
+    >> number;
+}
+
+fun main| {
+
+    int tries << 0;
+    text | "Tente acertar o numero sorteado";
+    text | "Toda vez que voce erra o numero e gerado novamente.";
+    while | true {
+
+        int answer << rand | 1, 10;
+
+        text | "Digite um numero:";
+        int guess << askNumber | ;
+        tries << tries + 1;
+        if | guess is answer {
+            text | "Voce acertou!";
+            break;
+        } else {
+            text | "Voce errou, tente novamente";
+        }
+    }
+
+    text | "Numero de tentativas:";
+    text | tries;
+}

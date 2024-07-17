@@ -215,7 +215,7 @@ function
         List<String> names = new ArrayList();
     }
         FUNC (name = VAR) PIPE
-          (types+=(INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR )
+          (types+=(INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR )?
             vars+=VAR (COMMA types+=(INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR ) vars+=VAR)*
           )?
           PIPE (ret = INT_VAR | BOOL_VAR | CHAR_VAR | DOUBLE_VAR | STRING_VAR | VOID_VAR )
@@ -553,7 +553,7 @@ function_randomNum [String funcName]
 
 function_customCall [String funcName]
     :
-        (funcCall = VAR) PIPE ((factor[funcName] | expression[funcName] | (function_customCall[funcName] SEMICOLON))
+        (funcCall = VAR) PIPE ((factor[funcName] | expression[funcName] | (function_customCall[funcName] SEMICOLON))?
         (COMMA (factor[funcName] | expression[funcName]) | (function_customCall[funcName] SEMICOLON))*)?
         {
 
