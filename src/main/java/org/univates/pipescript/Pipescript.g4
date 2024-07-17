@@ -467,7 +467,7 @@ function_scanString [String funcName]
             System.out.println("dup");
             System.out.println("getstatic java/lang/System/in Ljava/io/InputStream;");
             System.out.println("invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V");
-            System.out.println("invokevirtual java/util/Scanner/next()Ljava/lang/String;");
+            System.out.println("invokevirtual java/util/Scanner/nextLine()Ljava/lang/String;");
         }
     ;
 
