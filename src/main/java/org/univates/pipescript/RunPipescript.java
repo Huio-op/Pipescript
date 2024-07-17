@@ -3,12 +3,13 @@ package org.univates.pipescript;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 import static org.antlr.v4.runtime.CharStreams.fromFileName;
@@ -20,9 +21,12 @@ public class RunPipescript {
 
   public static void main(String[] args) {
     try {
-      List<String> vars = new ArrayList<>();
-      vars.stream().anyMatch(var -> !var.isEmpty());
-      CharStream input = fromFileName(INPUT_FILENAME);
+      String inputFileName = INPUT_FILENAME;
+      if (args.length > 0) {
+        inputFileName = args[0];
+      }
+
+      CharStream input = fromFileName(inputFileName);
       org.univates.pipescript.PipescriptLexer lexer = new org.univates.pipescript.PipescriptLexer(input);
       org.univates.pipescript.PipescriptParser parser = new org.univates.pipescript.PipescriptParser(new CommonTokenStream(lexer));
 
@@ -31,8 +35,12 @@ public class RunPipescript {
       try(FileOutputStream fileOutputStream = new FileOutputStream(OUTPUT_FILENAME)){
         fileOutputStream.write(compiledCode.getBytes());
       }
+
+      executePipescriptProgram();
     } catch (IOException e) {
       e.printStackTrace();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -47,6 +55,52 @@ public class RunPipescript {
     System.out.flush();
     System.setOut(old);
     return baos.toString();
+  }
+
+  public static void executePipescriptProgram() throws IOException, InterruptedException {
+    final String outputFileName = OUTPUT_FILENAME.split("/")[OUTPUT_FILENAME.split("/").length -1];
+    final String currentDir = System.getProperty("user.dir");
+    final File workDir = new File(currentDir + "\\src\\main\\java\\org\\univates\\pipescript\\output\\");
+    final String[] compileCommand = {
+      "java",
+      "-jar",
+      "jasmin-2.4.jar",
+      outputFileName
+    };
+
+    final ProcessBuilder compileProcess = new ProcessBuilder(compileCommand);
+    compileProcess.directory(workDir);
+    final Process procCompile = compileProcess.start();
+
+    if (procCompile.waitFor() != 0) {
+      final BufferedReader stdError = new BufferedReader(new
+        InputStreamReader(procCompile.getErrorStream()));
+      String s = null;
+      System.out.println("Error during compilation phase:\n");
+      while ((s = stdError.readLine()) != null) {
+        System.out.println(s);
+      }
+    }
+
+    final String[] executeCommand = {
+      "java",
+      outputFileName.split("\\.")[0]
+    };
+
+    final ProcessBuilder executeProcess = new ProcessBuilder(executeCommand);
+    executeProcess.directory(workDir);
+    executeProcess.inheritIO();
+    final Process procExec = executeProcess.start();
+
+    if (procExec.waitFor() != 0) {
+      final BufferedReader stdError = new BufferedReader(new
+        InputStreamReader(procExec.getErrorStream()));
+      String s = null;
+      System.out.println("Error during execution phase:\n");
+      while ((s = stdError.readLine()) != null) {
+        System.out.println(s);
+      }
+    }
   }
 
 }
