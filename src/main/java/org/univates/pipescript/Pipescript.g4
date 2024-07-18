@@ -11,6 +11,8 @@ grammar Pipescript;
     import java.util.Optional;
     import java.util.ArrayList;
     import java.util.Random;
+    import javax.sound.sampled.*;
+    import java.io.File;
 }
 
 @members
@@ -164,6 +166,7 @@ READ          : 'read';
 GOTO          : '@';
 DEF_GOTO      : 'def@';
 WRITE         : 'write';
+SOUND         : 'sound';
 NUM           : [0-9]+;
 COMMENT       : '#' .*? '\n' -> channel(HIDDEN);
 BREAK         : 'break';
@@ -305,6 +308,33 @@ statement [String funcName, Integer tempWhile]
         def_goto[funcName]                          |
         goto[funcName]                              |
         assignment[funcName, tempWhile]
+    ;
+
+function_playSound [String funcName]
+    :
+        SOUND PIPE STRING
+        {
+            String filePath = $STRING.text.replaceAll("^\"|\"$", "");
+            emit("new java/io/File");
+            emit("dup");
+            emit("ldc \"" + filePath + "\"");
+            emit("invokespecial java/io/File/<init>(Ljava/lang/String;)V");
+            emit("invokestatic javax/sound/sampled/AudioSystem/getAudioInputStream(Ljava/io/File;)Ljavax/sound/sampled/AudioInputStream;");
+            emit("astore_1");
+            emit("invokestatic javax/sound/sampled/AudioSystem/getClip()Ljavax/sound/sampled/Clip;");
+            emit("astore_2");
+            emit("aload_2");
+            emit("aload_1");
+            emit("invokeinterface javax/sound/sampled/Clip/open(Ljavax/sound/sampled/AudioInputStream;)V 2");
+            emit("aload_2");
+            emit("invokeinterface javax/sound/sampled/Clip/start()V 1");
+
+            emit("aload_2");
+            emit("invokeinterface javax/sound/sampled/Clip/getMicrosecondLength()J 1");
+            emit("ldc2_w 1000");
+            emit("ldiv");
+            emit("invokestatic java/lang/Thread/sleep(J)V");
+        }
     ;
 
 
@@ -624,6 +654,7 @@ call_function [String funcName, Integer tempWhile]
         function_scanString[funcName] |
         function_readFile[funcName] |
         function_writeFile[funcName] |
+        function_playSound[funcName] |
         function_randomNum[funcName] |
         function_customCall[funcName])
         SEMICOLON
