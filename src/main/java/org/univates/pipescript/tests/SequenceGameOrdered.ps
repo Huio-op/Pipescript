@@ -1,11 +1,5 @@
-fun verify|int num, int ran1, int ran2, int ran3 | int {
+fun verify| int num, int ran1 | int {
     if | num is ran1 {
-        >> 1;
-    }
-    if | num is ran2 {
-        >> 1;
-    }
-    if | num is ran3 {
         >> 1;
     }
 
@@ -19,7 +13,7 @@ fun main| {
     int tries << 0;
 
     text | "+----------------------------------------------------+";
-    text | "Pensei em 3 numeros.";
+    text | "Pensei em um sequencia de 3 numeros.";
     text | "Os numeros utilizados são de 0 a 10, podendo ou nao";
     text | "estarem repetidos";
     text | "+----------------------------------------------------+";
@@ -31,15 +25,15 @@ fun main| {
         int number2 << textInInt |;
         int number3 << textInInt |;
 
-        int guess1 << verify | number1, randNumber1, randNumber2, randNumber3;
-        int guess2 << verify | number2, randNumber1, randNumber2, randNumber3;
-        int guess3 << verify | number3, randNumber1, randNumber2, randNumber3;
+        int guess1 << verify | number1, randNumber1;
+        int guess2 << verify | number2, randNumber2;
+        int guess3 << verify | number3, randNumber3;
 
         int cont << guess1 + guess2 + guess3;
         tries << tries + 1;
 
         if | cont is 3 {
-            text | "Parabéns, você acertou os numeros";
+            text | "Parabéns, você acertou a sequencia";
 
             text | "Numero de tentativas:";
             text | tries;
