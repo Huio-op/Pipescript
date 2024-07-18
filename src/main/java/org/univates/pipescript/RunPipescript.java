@@ -16,7 +16,7 @@ import static org.antlr.v4.runtime.CharStreams.fromFileName;
 
 public class RunPipescript {
 
-  private final static String INPUT_FILENAME = "src/main/java/org/univates/pipescript/Test.ps";
+  private final static String INPUT_FILENAME = "src/main/java/org/univates/pipescript/tests/Test.ps";
   private final static String OUTPUT_FILENAME = "src/main/java/org/univates/pipescript/output/Output.j";
 
   public static void main(String[] args) {
@@ -78,6 +78,7 @@ public class RunPipescript {
       while ((s = stdError.readLine()) != null) {
         System.out.println(s);
       }
+      return;
     }
 
     final String[] executeCommand = {
