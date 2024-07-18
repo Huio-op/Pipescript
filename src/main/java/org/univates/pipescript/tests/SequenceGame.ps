@@ -1,0 +1,48 @@
+fun verify| int num, int ran1, int ran2, int ran3 | int {
+    if | num is ran1 {
+        >> 1;
+    }
+    if | num is ran2 {
+        >> 1;
+    }
+    if | num is ran3 {
+        >> 1;
+    }
+
+    >> 0;
+}
+
+fun main| {
+    int randNumber1 << rand | 0, 10;
+    int randNumber2 << rand | 0, 10;
+    int randNumber3 << rand | 0, 10;
+
+    text | "+----------------------------------------------------+";
+    text | "Pensei em um sequencia de 3 numeros.";
+    text | "Os numeros utilizados são de 0 a 10, podendo ou nao";
+    text | "estarem repetidos";
+    text | "+----------------------------------------------------+";
+
+    int won << 0;
+    while | won not 1 {
+        text | "Digite 3 numeros seguidos de enter";
+        int number1 << textInInt |;
+        int number2 << textInInt |;
+        int number3 << textInInt |;
+
+        int guess1 << verify | number1, randNumber1, randNumber2, randNumber3;
+        int guess2 << verify | number2, randNumber1, randNumber2, randNumber3;
+        int guess3 << verify | number3, randNumber1, randNumber2, randNumber3;
+
+        int cont << guess1 + guess2 + guess3;
+
+        if | cont is 3 {
+            text | "Parabéns, você acertou a sequencia";
+            break;
+        } else {
+            text | "Não foi dessa vez, você acertou ";
+            text | cont;
+            text | "elementos";
+        }
+    }
+}

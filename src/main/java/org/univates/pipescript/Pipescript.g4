@@ -307,8 +307,38 @@ statement [String funcName, Integer tempWhile]
         break[tempWhile]                            |
         def_goto[funcName]                          |
         goto[funcName]                              |
-        assignment[funcName, tempWhile]
+        assignment[funcName, tempWhile]             |
+        return_statement[funcName]
     ;
+
+return_statement [String funcName]
+    :   RETURN expression[funcName] SEMICOLON NL
+        {
+            String returnType = functions.stream()
+                                        .filter(f -> f.name.equals(funcName))
+                                        .findFirst()
+                                        .map(f -> f.returnType)
+                                        .orElse("V");
+
+            switch (returnType) {
+                case "int":
+                case "bool":
+                case "char":
+                    emit("ireturn");
+                    break;
+                case "double":
+                    emit("dreturn");
+                    break;
+                case "str":
+                    emit("areturn");
+                    break;
+                default:
+                    emit("return");
+                    break;
+            }
+        }
+    ;
+
 
 function_playSound [String funcName]
     :
@@ -343,13 +373,13 @@ statement_if [String funcName, Integer tempWhile]
         { Integer tempIf = ifCounter++; }
         IF PIPE expression[funcName] op = ( EQUAL | DIFFER | LESSER | LESSER_EQUAL | GREATER | GREATER_EQUAL ) expression[funcName]
             {
-
-             emit(($op.type == EQUAL)            ? "    if_icmpne NOT_IF_" + tempIf + " ; " :
+                emit(($op.type == EQUAL)         ? "    if_icmpne NOT_IF_" + tempIf + " ; " :
                      ($op.type == DIFFER)        ? "    if_icmpeq NOT_IF_" + tempIf + " ; " :
                      ($op.type == LESSER)        ? "    if_icmpge NOT_IF_" + tempIf + " ; " :
                      ($op.type == LESSER_EQUAL)  ? "    if_icmpgt NOT_IF_" + tempIf + " ; " :
                      ($op.type == GREATER)       ? "    if_icmple NOT_IF_" + tempIf + " ; " :
-                     ($op.type == GREATER_EQUAL) ? "    if_icmplt NOT_IF_" + tempIf + " ; " : "");            }
+                     ($op.type == GREATER_EQUAL) ? "    if_icmplt NOT_IF_" + tempIf + " ; " : "");
+            }
 
         OPEN_C NL (statement[funcName, tempWhile])* CLOSE_C NL
             { emit("NOT_IF_" + tempIf + ": "); }
