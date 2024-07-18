@@ -299,7 +299,6 @@ function
 statement [String funcName, Integer tempWhile]
     :
         NL                                          |
-        call_function[funcName, tempWhile]          |
         statement_if[funcName, tempWhile]           |
         statement_else[funcName, tempWhile]         |
         statement_while[funcName]                   |
@@ -308,7 +307,8 @@ statement [String funcName, Integer tempWhile]
         def_goto[funcName]                          |
         goto[funcName]                              |
         assignment[funcName, tempWhile]             |
-        return_statement[funcName]
+        return_statement[funcName]                  |
+        call_function[funcName, tempWhile]
     ;
 
 return_statement [String funcName]
